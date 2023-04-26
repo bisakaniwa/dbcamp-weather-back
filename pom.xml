@@ -95,6 +95,7 @@
 			</exclusions>
 		</dependency>
 
+
 	<!-- Banco de dados -->
 		<dependency>
 			<groupId>org.flywaydb</groupId>

@@ -19,7 +19,7 @@ public class MeteorologiaEntity {
     private String cidade;
 
     @Column(name = "data")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat
     private Date data;
 
     @Column(name = "tempo")
