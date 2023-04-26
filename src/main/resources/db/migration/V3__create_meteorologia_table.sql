@@ -1,0 +1,14 @@
+--create table IF NOT EXISTS meteorologia (
+--    id bigint not null,
+--    cidade varchar(255),
+--    data date,
+--    tempo ENUM('SOL', 'SOL_COM_NUVENS', 'NUBLADO', 'CHUVA', 'TEMPESTADE'),
+--    turno ENUM('DIA', 'NOITE'),
+--    temperatura-maxima float,
+--    temperatura-minima float,
+--    precipitacao float,
+--    umidade float,
+--    velocidade-ventos float, primary key (id)
+--);
+--
+--create sequence meteorologia_seq start with 1 increment by 50

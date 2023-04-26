@@ -44,12 +44,8 @@ public class TutorialController {
 
     @PostMapping("/tutorials")
     public ResponseEntity<TutorialEntity> createTutorial(@RequestBody TutorialEntity tutorial) {
-        try {
-            TutorialEntity _tutorial = tutorialService.create(new TutorialEntity(tutorial.getTitle(), tutorial.getDescription(), false));
-            return new ResponseEntity<>(_tutorial, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return ResponseEntity.ok(tutorialService.create(new TutorialEntity(tutorial.getTitle(), tutorial.getDescription(), false)));
+
     }
 
     @PutMapping("/tutorials/{id}")
