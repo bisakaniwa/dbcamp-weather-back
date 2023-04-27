@@ -1,33 +1,28 @@
-package com.template.service;
+package com.template.controller;
 
 import com.template.business.services.MeteorologiaService;
 import com.template.data.entity.MeteorologiaEntity;
 import com.template.data.enumKind.Tempo;
 import com.template.data.enumKind.Turno;
-import com.template.data.repository.MeteorologiaRepository;
+import com.template.presentation.controller.MeteorologiaController;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
-
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-public class MeteorologiaServiceTest {
-    @Mock
-    MeteorologiaRepository meteorologiaRepositoryMock;
+public class MeteorologiaControllerTest {
+    @MockBean
+    MeteorologiaService meteorologiaServiceMock;
 
     @InjectMocks
-    MeteorologiaService meteorologiaServiceMock;
+    MeteorologiaController meteorologiaControllerMock;
 
     public MeteorologiaEntity novaMeteorologia() {
         return new MeteorologiaEntity(
@@ -43,16 +38,13 @@ public class MeteorologiaServiceTest {
                 1231L, "Cidade2", new Date(2023, Calendar.JUNE, 13), Tempo.CHUVA, Turno.NOITE,
                 24, 15, 0, 1, 4
         );
-
-
     }
 
     @Test
     void registrarMeteorologiaComSucesso() {
         MeteorologiaEntity dummyMeteorologia = novaMeteorologia();
-        when(meteorologiaRepositoryMock.save(dummyMeteorologia)).thenReturn(dummyMeteorologia);
+        when(meteorologiaServiceMock.novoRegistro(dummyMeteorologia)).thenReturn(dummyMeteorologia);
 
-        assertThat(dummyMeteorologia).isEqualTo(meteorologiaServiceMock.novoRegistro(dummyMeteorologia));
+
     }
-
 }

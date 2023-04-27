@@ -60,6 +60,9 @@ public class MeteorologiaEntity {
     public MeteorologiaEntity() {
     }
 
+    public MeteorologiaEntity(long l, String cidade2, Date date) {
+    }
+
     public long getId() {
         return id;
     }
