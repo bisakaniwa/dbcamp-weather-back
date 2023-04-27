@@ -22,7 +22,12 @@ public class MeteorologiaController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<MeteorologiaEntity> excluirRegistro(@PathVariable long id) {
-        meteorologiaService.excluirRegistro(id);
-        return ResponseEntity.noContent().build();
+        try {
+            meteorologiaService.excluirRegistro(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
