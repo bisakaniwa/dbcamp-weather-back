@@ -19,4 +19,10 @@ public class MeteorologiaController {
     public ResponseEntity<MeteorologiaEntity> criarRegistro(@RequestBody MeteorologiaEntity meteorologia) {
         return new ResponseEntity<>(meteorologiaService.novoRegistro(meteorologia), HttpStatus.CREATED);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<MeteorologiaEntity> excluirRegistro(@PathVariable long id) {
+        meteorologiaService.excluirRegistro(id);
+        return ResponseEntity.noContent().build();
+    }
 }
