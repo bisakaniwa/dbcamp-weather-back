@@ -17,6 +17,7 @@ public class MeteorologiaService {
     public List<MeteorologiaEntity> listarTudo() {
         return meteorologiaRepository.findAll();
     }
+
     public MeteorologiaEntity novoRegistro(MeteorologiaEntity meteorologia) {
         return meteorologiaRepository.save(meteorologia);
     }
