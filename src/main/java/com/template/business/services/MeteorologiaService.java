@@ -15,4 +15,8 @@ public class MeteorologiaService {
     public MeteorologiaEntity novoRegistro(MeteorologiaEntity meteorologia) {
         return meteorologiaRepository.save(meteorologia);
     }
+
+    public void excluirRegistro(long id) {
+        meteorologiaRepository.deleteById(id);
+    }
 }
