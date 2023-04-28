@@ -15,43 +15,33 @@ public class MeteorologiaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotBlank
     private long id;
 
     @Column(name = "cidade")
-    @NotBlank
     private String cidade;
 
     @Column(name = "data")
-    @NotBlank
     private LocalDate data;
 
     @Column(name = "tempo")
-    @NotBlank
     private Tempo tempo;
 
     @Column(name = "turno")
-    @NotBlank
     private Turno turno;
 
     @Column(name = "temperatura-maxima")
-    @NotBlank
     private float temperaturaMaxima;
 
     @Column(name = "temperatura-minima")
-    @NotBlank
     private float temperaturaMinima;
 
     @Column(name = "precipitacao")
-    @NotBlank
     private float precipitacao;
 
     @Column(name = "umidade")
-    @NotBlank
     private float umidade;
 
     @Column(name = "velocidade-ventos")
-    @NotBlank
     private float velocidadeVentos;
 
     public MeteorologiaEntity(long id, String cidade, LocalDate data, Tempo tempo, Turno turno, float temperaturaMaxima,
