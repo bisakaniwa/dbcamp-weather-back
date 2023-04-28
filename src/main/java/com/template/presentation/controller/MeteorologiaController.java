@@ -19,4 +19,9 @@ public class MeteorologiaController {
     public ResponseEntity<MeteorologiaEntity> criarRegistro(@RequestBody MeteorologiaEntity meteorologia) {
         return new ResponseEntity<>(meteorologiaService.novoRegistro(meteorologia), HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MeteorologiaEntity> atualizarRegistro(@RequestBody MeteorologiaEntity meteorologia) {
+        return ResponseEntity.ok(meteorologiaService.atualizarRegistro(meteorologia));
+    }
 }
