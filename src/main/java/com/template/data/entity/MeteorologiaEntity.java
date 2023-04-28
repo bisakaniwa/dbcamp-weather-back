@@ -3,8 +3,10 @@ package com.template.data.entity;
 import com.template.data.enumKind.Tempo;
 import com.template.data.enumKind.Turno;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -19,8 +21,7 @@ public class MeteorologiaEntity {
     private String cidade;
 
     @Column(name = "data")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date data;
+    private LocalDate data;
 
     @Column(name = "tempo")
     private Tempo tempo;
@@ -43,7 +44,7 @@ public class MeteorologiaEntity {
     @Column(name = "velocidade-ventos")
     private float velocidadeVentos;
 
-    public MeteorologiaEntity(long id, String cidade, Date data, Tempo tempo, Turno turno, float temperaturaMaxima,
+    public MeteorologiaEntity(long id, String cidade, LocalDate data, Tempo tempo, Turno turno, float temperaturaMaxima,
                               float temperaturaMinima, float precipitacao, float umidade, float velocidadeVentos) {
         this.id = id;
         this.cidade = cidade;
@@ -58,6 +59,9 @@ public class MeteorologiaEntity {
     }
 
     public MeteorologiaEntity() {
+    }
+
+    public MeteorologiaEntity(long l, String cidade2, Date date) {
     }
 
     public long getId() {
@@ -76,11 +80,11 @@ public class MeteorologiaEntity {
         this.cidade = cidade;
     }
 
-    public Date getData() {
+    public LocalDate getData() {
         return data;
     }
 
-    public void setData(Date data) {
+    public void setData(LocalDate data) {
         this.data = data;
     }
 
