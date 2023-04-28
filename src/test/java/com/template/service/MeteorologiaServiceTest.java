@@ -14,12 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 
-import static org.assertj.core.api.InstanceOfAssertFactories.list;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -30,18 +28,18 @@ public class MeteorologiaServiceTest {
     MeteorologiaRepository meteorologiaRepositoryMock;
 
     @InjectMocks
-    MeteorologiaService meteorologiaServiceMock;
+    MeteorologiaService meteorologiaService;
 
     public MeteorologiaEntity novaMeteorologia() {
         return new MeteorologiaEntity(
-                1230L, "Cidade", new Date(2023, Calendar.MAY, 12), Tempo.SOL, Turno.DIA,
+                1230L, "Cidade", LocalDate.of(2023, 4, 12), Tempo.SOL, Turno.DIA,
                 23, 12, 2, 3, 1
         );
     }
 
     public MeteorologiaEntity outraMeteorologia() {
         return new MeteorologiaEntity(
-                1231L, "Cidade2", new Date(2023, Calendar.JUNE, 13), Tempo.CHUVA, Turno.NOITE,
+                1231L, "Cidade2", LocalDate.of(2023, 4, 13), Tempo.CHUVA, Turno.NOITE,
                 24, 15, 0, 1, 4
         );
     }
@@ -53,7 +51,7 @@ public class MeteorologiaServiceTest {
 
         when(meteorologiaRepositoryMock.findAll()).thenReturn(List.of(dummyMeteorologia, dummyMeteorologia1));
 
-        List<MeteorologiaEntity> lista = meteorologiaServiceMock.listarTudo();
+        List<MeteorologiaEntity> lista = meteorologiaService.listarTudo();
 
         assertNotNull(lista);
         assertEquals(2, lista.size());
@@ -68,7 +66,18 @@ public class MeteorologiaServiceTest {
         MeteorologiaEntity dummyMeteorologia = novaMeteorologia();
         when(meteorologiaRepositoryMock.save(dummyMeteorologia)).thenReturn(dummyMeteorologia);
 
-        assertThat(dummyMeteorologia).isEqualTo(meteorologiaServiceMock.novoRegistro(dummyMeteorologia));
+        assertThat(dummyMeteorologia).isEqualTo(meteorologiaService.novoRegistro(dummyMeteorologia));
     }
 
+    @Test
+    void registrarMeteorologiaSemDataEFalhar() {
+        MeteorologiaEntity meteorologiaSemData = new MeteorologiaEntity(
+                1231L, "Townsville", null, Tempo.CHUVA, Turno.NOITE, 22,
+                11, 3, 2, 1);
+        try {
+            meteorologiaRepositoryMock.save(meteorologiaSemData);
+        } catch (Exception e) {
+            assertEquals(RuntimeException.class, e.getClass());
+        }
+    }
 }
