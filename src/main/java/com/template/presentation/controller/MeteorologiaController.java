@@ -1,13 +1,15 @@
 package com.template.presentation.controller;
 
 import com.template.business.services.MeteorologiaService;
+import com.template.data.DTOs.MeteorologiaDTOLista;
 import com.template.data.entity.MeteorologiaEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:4767")
 @RestController
@@ -18,11 +20,12 @@ public class MeteorologiaController {
     MeteorologiaService meteorologiaService;
 
     @GetMapping
-    public ResponseEntity<List<MeteorologiaEntity>> buscarTodosRegistros() {
-        return ResponseEntity.ok(meteorologiaService.listarTudo());
+    public ResponseEntity<Page<MeteorologiaDTOLista>> buscarRegistros(Pageable paginacao) {
+        return ResponseEntity.ok(meteorologiaService.listarRegistros(paginacao));
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<MeteorologiaEntity> criarRegistro(@RequestBody MeteorologiaEntity meteorologia) {
         return new ResponseEntity<>(meteorologiaService.novoRegistro(meteorologia), HttpStatus.CREATED);
     }

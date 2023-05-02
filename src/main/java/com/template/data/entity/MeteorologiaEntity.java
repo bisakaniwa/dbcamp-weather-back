@@ -3,11 +3,8 @@ package com.template.data.entity;
 import com.template.data.enumKind.Tempo;
 import com.template.data.enumKind.Turno;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Table(name = "meteorologia")
@@ -61,16 +58,10 @@ public class MeteorologiaEntity {
     public MeteorologiaEntity() {
     }
 
-    public MeteorologiaEntity(long l, String cidade2, Date date) {
-    }
-
     public long getId() {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getCidade() {
         return cidade;
