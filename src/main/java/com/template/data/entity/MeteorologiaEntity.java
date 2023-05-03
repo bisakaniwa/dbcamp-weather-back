@@ -1,11 +1,12 @@
 package com.template.data.entity;
 
-import com.template.data.enumKind.Tempo;
-import com.template.data.enumKind.Turno;
+import com.template.data.enumKind.TempoDia;
+import com.template.data.enumKind.TempoNoite;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Table(name = "meteorologia")
@@ -15,40 +16,41 @@ public class MeteorologiaEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(name = "cidade")
+    @NotBlank
     private String cidade;
 
-    @Column(name = "data")
+    @NotNull
     private LocalDate data;
 
-    @Column(name = "tempo")
-    private Tempo tempo;
+    @NotNull
+    private TempoDia tempoDia;
 
-    @Column(name = "turno")
-    private Turno turno;
+    @NotNull
+    private TempoNoite tempoNoite;
 
-    @Column(name = "temperatura-maxima")
+    @NotNull
     private float temperaturaMaxima;
 
-    @Column(name = "temperatura-minima")
+    @NotNull
     private float temperaturaMinima;
 
-    @Column(name = "precipitacao")
+    @NotNull
     private float precipitacao;
 
-    @Column(name = "umidade")
+    @NotNull
     private float umidade;
 
-    @Column(name = "velocidade-ventos")
+    @NotNull
     private float velocidadeVentos;
 
-    public MeteorologiaEntity(long id, String cidade, LocalDate data, Tempo tempo, Turno turno, float temperaturaMaxima,
-                              float temperaturaMinima, float precipitacao, float umidade, float velocidadeVentos) {
+    public MeteorologiaEntity(long id, String cidade, LocalDate data, TempoDia tempoDia, TempoNoite tempoNoite,
+                              float temperaturaMaxima, float temperaturaMinima, float precipitacao, float umidade,
+                              float velocidadeVentos) {
         this.id = id;
         this.cidade = cidade;
         this.data = data;
-        this.tempo = tempo;
-        this.turno = turno;
+        this.tempoDia = tempoDia;
+        this.tempoNoite = tempoNoite;
         this.temperaturaMaxima = temperaturaMaxima;
         this.temperaturaMinima = temperaturaMinima;
         this.precipitacao = precipitacao;
@@ -83,20 +85,20 @@ public class MeteorologiaEntity {
         this.data = data;
     }
 
-    public Tempo getTempo() {
-        return tempo;
+    public TempoDia getTempoDia() {
+        return tempoDia;
     }
 
-    public void setTempo(Tempo tempo) {
-        this.tempo = tempo;
+    public void setTempoDia(TempoDia tempoDia) {
+        this.tempoDia = tempoDia;
     }
 
-    public Turno getTurno() {
-        return turno;
+    public TempoNoite getTempoNoite() {
+        return tempoNoite;
     }
 
-    public void setTurno(Turno turno) {
-        this.turno = turno;
+    public void setTempoNoite(TempoNoite tempoNoite) {
+        this.tempoNoite = tempoNoite;
     }
 
     public float getTemperaturaMaxima() {

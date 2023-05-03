@@ -1,8 +1,7 @@
 package com.template.data.enumKind;
 
-public enum Tempo {
-    SOL,
-    SOL_COM_NUVENS,
+public enum TempoNoite {
+    LIMPO,
     NUBLADO,
     CHUVA,
     TEMPESTADE
