@@ -12,9 +12,12 @@ import java.util.List;
 
 @Service
 public class MeteorologiaService {
+    MeteorologiaRepository meteorologiaRepository;
 
     @Autowired
-    MeteorologiaRepository meteorologiaRepository;
+    public MeteorologiaService(MeteorologiaRepository meteorologiaRepository) {
+        this.meteorologiaRepository = meteorologiaRepository;
+    }
 
     public List<MeteorologiaEntity> listarTudo() {
         return meteorologiaRepository.findAll();
