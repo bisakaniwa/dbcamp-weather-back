@@ -1,9 +1,7 @@
 package com.template.business.services;
 
 import com.template.data.entity.MeteorologiaEntity;
-import com.template.data.exception.MeteorologiaNotFoundException;
 import com.template.data.repository.MeteorologiaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,7 +12,6 @@ import java.util.List;
 public class MeteorologiaService {
     MeteorologiaRepository meteorologiaRepository;
 
-    @Autowired
     public MeteorologiaService(MeteorologiaRepository meteorologiaRepository) {
         this.meteorologiaRepository = meteorologiaRepository;
     }
