@@ -5,7 +5,6 @@ import com.template.data.enumKind.Turno;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Table(name = "meteorologia")
@@ -63,9 +62,6 @@ public class MeteorologiaEntity {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getCidade() {
         return cidade;
