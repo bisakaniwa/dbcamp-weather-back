@@ -1,26 +1,34 @@
 package com.template.service;
 
 import com.template.business.services.MeteorologiaService;
+import com.template.data.DTOs.MeteorologiaDTOLista;
 import com.template.data.entity.MeteorologiaEntity;
 import com.template.data.enumKind.Tempo;
 import com.template.data.enumKind.Turno;
+import com.template.data.exception.MeteorologiaNotFoundException;
 import com.template.data.repository.MeteorologiaRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
+
 
 @ExtendWith(MockitoExtension.class)
 public class MeteorologiaServiceTest {
@@ -45,6 +53,25 @@ public class MeteorologiaServiceTest {
     }
 
     @Test
+    void buscarPaginaDeRegistrosComSucesso() {
+        MeteorologiaEntity item01 = novaMeteorologia();
+        MeteorologiaEntity item02 = outraMeteorologia();
+        MeteorologiaEntity item03 = new MeteorologiaEntity();
+
+        Pageable paginacao = PageRequest.of(0,10);
+        List<MeteorologiaEntity> listaMeteorologias = List.of(item01, item02, item03);
+        Page<MeteorologiaEntity> pagina = new PageImpl<>(listaMeteorologias, paginacao, 1);
+
+        when(meteorologiaRepositoryMock.findAll(paginacao)).thenReturn(pagina);
+
+        Page<MeteorologiaDTOLista> paginaMeteorologias = meteorologiaService.listarRegistros(paginacao);
+
+        Assertions.assertNotNull(listaMeteorologias);
+        Assertions.assertNotNull(paginaMeteorologias);
+        Assertions.assertEquals(3, paginaMeteorologias.getTotalElements());
+    }
+
+    @Test
     void buscarTodosOsRegistrosComSucesso() {
         MeteorologiaEntity dummyMeteorologia = novaMeteorologia();
         MeteorologiaEntity dummyMeteorologia1 = outraMeteorologia();
@@ -53,12 +80,12 @@ public class MeteorologiaServiceTest {
 
         List<MeteorologiaEntity> lista = meteorologiaService.listarTudo();
 
-        assertNotNull(lista);
-        assertEquals(2, lista.size());
-        assertEquals(MeteorologiaEntity.class, lista.get(0).getClass());
+        Assertions.assertNotNull(lista);
+        Assertions.assertEquals(2, lista.size());
+        Assertions.assertEquals(MeteorologiaEntity.class, lista.get(0).getClass());
 
-        assertEquals(dummyMeteorologia, lista.get(0));
-        assertEquals(dummyMeteorologia1, lista.get(1));
+        Assertions.assertEquals(dummyMeteorologia, lista.get(0));
+        Assertions.assertEquals(dummyMeteorologia1, lista.get(1));
     }
 
     @Test
@@ -77,7 +104,27 @@ public class MeteorologiaServiceTest {
         try {
             meteorologiaRepositoryMock.save(meteorologiaSemData);
         } catch (Exception e) {
-            assertEquals(RuntimeException.class, e.getClass());
+            Assertions.assertEquals(RuntimeException.class, e.getClass());
+        }
+    }
+
+    @Test
+    void removerRegistroComSucesso() {
+        MeteorologiaEntity dummyMeteorologia = novaMeteorologia();
+
+        meteorologiaService.excluirRegistro(1230);
+        verify(meteorologiaRepositoryMock, times(1)).deleteById(1230L);
+    }
+
+    @Test
+    void removerRegistroInexistente() {
+        when(meteorologiaRepositoryMock.findById(anyLong()))
+                .thenThrow(new MeteorologiaNotFoundException("Registro não encontrado."));
+
+        try {
+            meteorologiaService.excluirRegistro(1230L);
+        } catch (Exception e) {
+            assertEquals(MeteorologiaNotFoundException.class, e.getClass());
         }
     }
 }

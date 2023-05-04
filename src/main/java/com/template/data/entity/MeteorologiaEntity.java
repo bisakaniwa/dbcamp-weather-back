@@ -62,6 +62,7 @@ public class MeteorologiaEntity {
         return id;
     }
 
+
     public String getCidade() {
         return cidade;
     }

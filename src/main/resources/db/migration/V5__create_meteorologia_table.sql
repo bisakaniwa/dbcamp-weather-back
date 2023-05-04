@@ -1,0 +1,17 @@
+--create table IF NOT EXISTS meteorologia (
+--
+--    id bigint not null,
+--    cidade varchar(255) not null,
+--    data date not null,
+--    tempo ENUM('SOL', 'SOL_COM_NUVENS', 'NUBLADO', 'CHUVA', 'TEMPESTADE') not null,
+--    turno ENUM('DIA', 'NOITE') not null,
+--    temperaturaMaxima float not null,
+--    temperaturaMinima float not null,
+--    precipitacao float not null,
+--    umidade float not null,
+--    ventos float not null,
+--
+--    primary key (id)
+--);
+--
+--create sequence meteorologia_seq start with 1 increment by 17
