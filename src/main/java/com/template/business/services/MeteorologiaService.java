@@ -3,22 +3,24 @@ package com.template.business.services;
 import com.template.data.DTOs.MeteorologiaDTOLista;
 import com.template.data.entity.MeteorologiaEntity;
 import com.template.data.repository.MeteorologiaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 
+import java.util.List;
 
 @Service
 public class MeteorologiaService {
-
-    @Autowired
     MeteorologiaRepository meteorologiaRepository;
 
     public Page<MeteorologiaDTOLista> listarRegistros(Pageable paginacao) {
         return meteorologiaRepository.findAll(paginacao).map(MeteorologiaDTOLista::new);
+    }
+
+    public MeteorologiaService(MeteorologiaRepository meteorologiaRepository) {
+        this.meteorologiaRepository = meteorologiaRepository;
     }
 
     public List<MeteorologiaEntity> listarTudo() {
@@ -27,5 +29,10 @@ public class MeteorologiaService {
 
     public MeteorologiaEntity novoRegistro(MeteorologiaEntity meteorologia) {
         return meteorologiaRepository.save(meteorologia);
+    }
+
+    public void excluirRegistro(long id) {
+        Optional<MeteorologiaEntity> meteorologia = meteorologiaRepository.findById(id);
+        meteorologiaRepository.deleteById(id);
     }
 }

@@ -5,6 +5,7 @@ import com.template.data.DTOs.MeteorologiaDTOLista;
 import com.template.data.entity.MeteorologiaEntity;
 import com.template.data.enumKind.Tempo;
 import com.template.data.enumKind.Turno;
+import com.template.data.exception.MeteorologiaNotFoundException;
 import com.template.data.repository.MeteorologiaRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,8 @@ import java.util.List;
 
 
 import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class MeteorologiaServiceTest {
@@ -101,6 +104,26 @@ public class MeteorologiaServiceTest {
             meteorologiaRepositoryMock.save(meteorologiaSemData);
         } catch (Exception e) {
             Assertions.assertEquals(RuntimeException.class, e.getClass());
+        }
+    }
+
+    @Test
+    void removerRegistroComSucesso() {
+        MeteorologiaEntity dummyMeteorologia = novaMeteorologia();
+
+        meteorologiaService.excluirRegistro(1230);
+        verify(meteorologiaRepositoryMock, times(1)).deleteById(1230L);
+    }
+
+    @Test
+    void removerRegistroInexistente() {
+        when(meteorologiaRepositoryMock.findById(anyLong()))
+                .thenThrow(new MeteorologiaNotFoundException("Registro não encontrado."));
+
+        try {
+            meteorologiaService.excluirRegistro(1230L);
+        } catch (Exception e) {
+            assertEquals(MeteorologiaNotFoundException.class, e.getClass());
         }
     }
 }
