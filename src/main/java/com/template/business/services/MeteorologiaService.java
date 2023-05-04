@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 public class MeteorologiaService {
@@ -17,6 +19,10 @@ public class MeteorologiaService {
 
     public Page<MeteorologiaDTOLista> listarRegistros(Pageable paginacao) {
         return meteorologiaRepository.findAll(paginacao).map(MeteorologiaDTOLista::new);
+    }
+
+    public List<MeteorologiaEntity> listarTudo() {
+        return meteorologiaRepository.findAll();
     }
 
     public MeteorologiaEntity novoRegistro(MeteorologiaEntity meteorologia) {

@@ -68,6 +68,23 @@ public class MeteorologiaServiceTest {
     }
 
     @Test
+    void buscarTodosOsRegistrosComSucesso() {
+        MeteorologiaEntity dummyMeteorologia = novaMeteorologia();
+        MeteorologiaEntity dummyMeteorologia1 = outraMeteorologia();
+
+        when(meteorologiaRepositoryMock.findAll()).thenReturn(List.of(dummyMeteorologia, dummyMeteorologia1));
+
+        List<MeteorologiaEntity> lista = meteorologiaService.listarTudo();
+
+        Assertions.assertNotNull(lista);
+        Assertions.assertEquals(2, lista.size());
+        Assertions.assertEquals(MeteorologiaEntity.class, lista.get(0).getClass());
+
+        Assertions.assertEquals(dummyMeteorologia, lista.get(0));
+        Assertions.assertEquals(dummyMeteorologia1, lista.get(1));
+    }
+
+    @Test
     void registrarMeteorologiaComSucesso() {
         MeteorologiaEntity dummyMeteorologia = novaMeteorologia();
         when(meteorologiaRepositoryMock.save(dummyMeteorologia)).thenReturn(dummyMeteorologia);

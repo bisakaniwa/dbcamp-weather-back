@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin(origins = "http://localhost:4767")
 @RestController
 @RequestMapping("/api/v1/meteorologia")
@@ -25,6 +27,11 @@ public class MeteorologiaController {
     public ResponseEntity<Page<MeteorologiaDTOLista>> buscarRegistros(
             @PageableDefault(sort = {"data"}, direction = Sort.Direction.DESC) Pageable paginacao) {
         return ResponseEntity.ok(meteorologiaService.listarRegistros(paginacao));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<MeteorologiaEntity>> buscarTudo() {
+        return ResponseEntity.ok(meteorologiaService.listarTudo());
     }
 
     @PostMapping
