@@ -15,12 +15,12 @@ import java.util.List;
 public class MeteorologiaService {
     MeteorologiaRepository meteorologiaRepository;
 
-    public Page<MeteorologiaDTOLista> listarRegistros(Pageable paginacao) {
-        return meteorologiaRepository.findAll(paginacao).map(MeteorologiaDTOLista::new);
-    }
-
     public MeteorologiaService(MeteorologiaRepository meteorologiaRepository) {
         this.meteorologiaRepository = meteorologiaRepository;
+    }
+
+    public Page<MeteorologiaDTOLista> listarRegistros(Pageable paginacao) {
+        return meteorologiaRepository.findAll(paginacao).map(MeteorologiaDTOLista::new);
     }
 
     public List<MeteorologiaEntity> listarTudo() {

@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
+
 @ExtendWith(MockitoExtension.class)
 public class MeteorologiaServiceTest {
     @Mock
