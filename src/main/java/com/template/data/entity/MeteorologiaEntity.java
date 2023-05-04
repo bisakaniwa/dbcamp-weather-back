@@ -23,15 +23,21 @@ public class MeteorologiaEntity {
     private LocalDate data;
 
     @NotNull
+    @Column(name = "tempo_dia")
+    @Enumerated(EnumType.STRING)
     private TempoDia tempoDia;
 
     @NotNull
+    @Column(name = "tempo_noite")
+    @Enumerated(EnumType.STRING)
     private TempoNoite tempoNoite;
 
     @NotNull
+    @Column(name = "temperatura_maxima")
     private float temperaturaMaxima;
 
     @NotNull
+    @Column(name = "temperatura_minima")
     private float temperaturaMinima;
 
     @NotNull
@@ -41,6 +47,7 @@ public class MeteorologiaEntity {
     private float umidade;
 
     @NotNull
+    @Column(name = "velocidade_ventos")
     private float velocidadeVentos;
 
     public MeteorologiaEntity(long id, String cidade, LocalDate data, TempoDia tempoDia, TempoNoite tempoNoite,
