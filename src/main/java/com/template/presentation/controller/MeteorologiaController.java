@@ -43,6 +43,7 @@ public class MeteorologiaController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<MeteorologiaEntity> excluirRegistro(@PathVariable long id) {
         try {
             meteorologiaService.excluirRegistro(id);
