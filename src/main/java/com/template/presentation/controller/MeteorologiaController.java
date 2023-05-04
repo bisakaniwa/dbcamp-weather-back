@@ -1,8 +1,9 @@
 package com.template.presentation.controller;
 
 import com.template.business.services.MeteorologiaService;
-import com.template.data.DTOs.MeteorologiaDTOLista;
+import com.template.data.DTOs.MeteorologiaDTOReadOnly;
 import com.template.data.entity.MeteorologiaEntity;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,7 +27,7 @@ public class MeteorologiaController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<MeteorologiaDTOLista>> buscarRegistros(
+    public ResponseEntity<Page<MeteorologiaDTOReadOnly>> buscarRegistros(
             @PageableDefault(sort = {"data"}, direction = Sort.Direction.DESC) Pageable paginacao) {
         return ResponseEntity.ok(meteorologiaService.listarRegistros(paginacao));
     }
@@ -38,12 +39,13 @@ public class MeteorologiaController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<MeteorologiaEntity> criarRegistro(@RequestBody MeteorologiaEntity meteorologia) {
+    public ResponseEntity<MeteorologiaEntity> criarRegistro(@RequestBody @Valid MeteorologiaEntity meteorologia) {
         return new ResponseEntity<>(meteorologiaService.novoRegistro(meteorologia), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MeteorologiaEntity> atualizarRegistro(@RequestBody MeteorologiaEntity meteorologia) {
+    @Transactional
+    public ResponseEntity<MeteorologiaEntity> atualizarRegistro(@RequestBody @Valid MeteorologiaEntity meteorologia) {
         return ResponseEntity.ok(meteorologiaService.atualizarRegistro(meteorologia));
     }
 

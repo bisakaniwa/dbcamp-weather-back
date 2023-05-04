@@ -1,6 +1,6 @@
 package com.template.business.services;
 
-import com.template.data.DTOs.MeteorologiaDTOLista;
+import com.template.data.DTOs.MeteorologiaDTOReadOnly;
 import com.template.data.entity.MeteorologiaEntity;
 import com.template.data.repository.MeteorologiaRepository;
 import org.springframework.data.domain.Page;
@@ -19,8 +19,8 @@ public class MeteorologiaService {
         this.meteorologiaRepository = meteorologiaRepository;
     }
 
-    public Page<MeteorologiaDTOLista> listarRegistros(Pageable paginacao) {
-        return meteorologiaRepository.findAll(paginacao).map(MeteorologiaDTOLista::new);
+    public Page<MeteorologiaDTOReadOnly> listarRegistros(Pageable paginacao) {
+        return meteorologiaRepository.findAll(paginacao).map(MeteorologiaDTOReadOnly::new);
     }
 
     public List<MeteorologiaEntity> listarTudo() {

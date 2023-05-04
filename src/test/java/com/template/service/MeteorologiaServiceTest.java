@@ -1,7 +1,7 @@
 package com.template.service;
 
 import com.template.business.services.MeteorologiaService;
-import com.template.data.DTOs.MeteorologiaDTOLista;
+import com.template.data.DTOs.MeteorologiaDTOReadOnly;
 import com.template.data.entity.MeteorologiaEntity;
 import com.template.data.enumKind.Tempo;
 import com.template.data.enumKind.Turno;
@@ -64,7 +64,7 @@ public class MeteorologiaServiceTest {
 
         when(meteorologiaRepositoryMock.findAll(paginacao)).thenReturn(pagina);
 
-        Page<MeteorologiaDTOLista> paginaMeteorologias = meteorologiaService.listarRegistros(paginacao);
+        Page<MeteorologiaDTOReadOnly> paginaMeteorologias = meteorologiaService.listarRegistros(paginacao);
 
         Assertions.assertNotNull(listaMeteorologias);
         Assertions.assertNotNull(paginaMeteorologias);

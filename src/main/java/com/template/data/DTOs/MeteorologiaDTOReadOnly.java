@@ -4,11 +4,11 @@ import com.template.data.entity.MeteorologiaEntity;
 
 import java.time.LocalDate;
 
-public record MeteorologiaDTOLista(
+public record MeteorologiaDTOReadOnly(
         String cidade,
         LocalDate data
 ) {
-    public MeteorologiaDTOLista(MeteorologiaEntity meteorologia) {
+    public MeteorologiaDTOReadOnly(MeteorologiaEntity meteorologia) {
         this(meteorologia.getCidade(), meteorologia.getData());
     }
 }

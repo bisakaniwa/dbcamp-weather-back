@@ -3,6 +3,8 @@ package com.template.data.entity;
 import com.template.data.enumKind.Tempo;
 import com.template.data.enumKind.Turno;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
@@ -14,31 +16,32 @@ public class MeteorologiaEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(name = "cidade")
+    @NotBlank
     private String cidade;
 
+    @NotNull
     @Column(name = "data")
     private LocalDate data;
 
-    @Column(name = "tempo")
+    @NotNull
     private Tempo tempo;
 
-    @Column(name = "turno")
+    @NotNull
     private Turno turno;
 
-    @Column(name = "temperatura-maxima")
+    @NotNull
     private float temperaturaMaxima;
 
-    @Column(name = "temperatura-minima")
+    @NotNull
     private float temperaturaMinima;
 
-    @Column(name = "precipitacao")
+    @NotNull
     private float precipitacao;
 
-    @Column(name = "umidade")
+    @NotNull
     private float umidade;
 
-    @Column(name = "velocidade-ventos")
+    @NotNull
     private float velocidadeVentos;
 
     public MeteorologiaEntity(long id, String cidade, LocalDate data, Tempo tempo, Turno turno, float temperaturaMaxima,
