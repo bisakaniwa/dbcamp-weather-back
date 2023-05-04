@@ -8,18 +8,31 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 @Service
 public class MeteorologiaService {
-
-    @Autowired
     MeteorologiaRepository meteorologiaRepository;
 
+    public MeteorologiaService(MeteorologiaRepository meteorologiaRepository) {
+        this.meteorologiaRepository = meteorologiaRepository;
+    }
+    
     public Page<MeteorologiaDTOLista> listarRegistros(Pageable paginacao) {
         return meteorologiaRepository.findAll(paginacao).map(MeteorologiaDTOLista::new);
+    }
+   
+    public List<MeteorologiaEntity> listarTudo() {
+        return meteorologiaRepository.findAll();
     }
 
     public MeteorologiaEntity novoRegistro(MeteorologiaEntity meteorologia) {
         return meteorologiaRepository.save(meteorologia);
+    }
+
+    public void excluirRegistro(long id) {
+        Optional<MeteorologiaEntity> meteorologia = meteorologiaRepository.findById(id);
+        meteorologiaRepository.deleteById(id);
     }
 }
