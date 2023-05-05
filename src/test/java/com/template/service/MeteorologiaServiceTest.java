@@ -3,8 +3,8 @@ package com.template.service;
 import com.template.business.services.MeteorologiaService;
 import com.template.data.DTOs.MeteorologiaDTOReadOnly;
 import com.template.data.entity.MeteorologiaEntity;
-import com.template.data.enumKind.Tempo;
-import com.template.data.enumKind.Turno;
+import com.template.data.enumKind.TempoDia;
+import com.template.data.enumKind.TempoNoite;
 import com.template.data.exception.MeteorologiaNotFoundException;
 import com.template.data.repository.MeteorologiaRepository;
 import org.junit.jupiter.api.Assertions;
@@ -40,14 +40,14 @@ public class MeteorologiaServiceTest {
 
     public MeteorologiaEntity novaMeteorologia() {
         return new MeteorologiaEntity(
-                1230L, "Cidade", LocalDate.of(2023, 4, 12), Tempo.SOL, Turno.DIA,
+                1230L, "Cidade", LocalDate.of(2023, 4, 12), TempoDia.SOL, TempoNoite.NUBLADO,
                 23, 12, 2, 3, 1
         );
     }
 
     public MeteorologiaEntity outraMeteorologia() {
         return new MeteorologiaEntity(
-                1231L, "Cidade2", LocalDate.of(2023, 4, 13), Tempo.CHUVA, Turno.NOITE,
+                1231L, "Cidade2", LocalDate.of(2023, 4, 13), TempoDia.CHUVA, TempoNoite.LIMPO,
                 24, 15, 0, 1, 4
         );
     }
@@ -99,7 +99,7 @@ public class MeteorologiaServiceTest {
     @Test
     void registrarMeteorologiaSemDataEFalhar() {
         MeteorologiaEntity meteorologiaSemData = new MeteorologiaEntity(
-                1231L, "Townsville", null, Tempo.CHUVA, Turno.NOITE, 22,
+                1231L, "Townsville", null, TempoDia.CHUVA, TempoNoite.CHUVA, 22,
                 11, 3, 2, 1);
         try {
             meteorologiaRepositoryMock.save(meteorologiaSemData);
