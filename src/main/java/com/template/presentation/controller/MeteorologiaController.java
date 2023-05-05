@@ -1,7 +1,7 @@
 package com.template.presentation.controller;
 
 import com.template.business.services.MeteorologiaService;
-import com.template.data.DTOs.MeteorologiaDTOLista;
+import com.template.data.DTOs.MeteorologiaDTOReadOnly;
 import com.template.data.entity.MeteorologiaEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +26,7 @@ public class MeteorologiaController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<MeteorologiaDTOLista>> buscarRegistros(
+    public ResponseEntity<Page<MeteorologiaDTOReadOnly>> buscarRegistros(
             @PageableDefault(sort = {"data"}, direction = Sort.Direction.DESC) Pageable paginacao) {
         return ResponseEntity.ok(meteorologiaService.listarRegistros(paginacao));
     }
@@ -34,6 +34,13 @@ public class MeteorologiaController {
     @GetMapping("/all")
     public ResponseEntity<List<MeteorologiaEntity>> buscarTudo() {
         return ResponseEntity.ok(meteorologiaService.listarTudo());
+    }
+
+    @GetMapping("/{cidade}")
+    public ResponseEntity<Page<MeteorologiaDTOReadOnly>> buscarPorCidade(
+            @PageableDefault(sort = {"data"}, direction = Sort.Direction.DESC) Pageable paginacao,
+            @PathVariable String cidade) {
+        return ResponseEntity.ok(meteorologiaService.listarPorCidade(paginacao, cidade));
     }
 
     @PostMapping
