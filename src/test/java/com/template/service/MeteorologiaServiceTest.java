@@ -5,6 +5,7 @@ import com.template.data.DTOs.MeteorologiaDTOReadOnly;
 import com.template.data.entity.MeteorologiaEntity;
 import com.template.data.enumKind.TempoDia;
 import com.template.data.enumKind.TempoNoite;
+import com.template.data.exception.CidadeNotFoundException;
 import com.template.data.exception.MeteorologiaNotFoundException;
 import com.template.data.repository.MeteorologiaRepository;
 import org.junit.jupiter.api.Assertions;
@@ -90,13 +91,12 @@ public class MeteorologiaServiceTest {
     @Test
     void buscarPorCidadeComSucesso() {
         MeteorologiaEntity cidade1 = novaMeteorologia();
-        MeteorologiaEntity cidade2 = outraMeteorologia();
         MeteorologiaEntity maisUmRegistroCidade1 = new MeteorologiaEntity(1234L, "Cidade1",
                 LocalDate.of(2022, 5, 3), TempoDia.TEMPESTADE, TempoNoite.LIMPO, 26,
                 15, 2, 3,0);
 
         Pageable paginacao = PageRequest.of(0,10);
-        List<MeteorologiaEntity> listaMeteorologias = List.of(cidade1, cidade2, maisUmRegistroCidade1);
+        List<MeteorologiaEntity> listaMeteorologias = List.of(cidade1, maisUmRegistroCidade1);
         Page<MeteorologiaEntity> pagina = new PageImpl<>(listaMeteorologias, paginacao, 1);
 
         when(meteorologiaRepositoryMock.findByCidade(paginacao, "Cidade1")).thenReturn(pagina);
@@ -106,6 +106,19 @@ public class MeteorologiaServiceTest {
         Assertions.assertNotNull(listaMeteorologias);
         Assertions.assertNotNull(paginaMeteorologias);
         Assertions.assertEquals(2, paginaMeteorologias.getTotalElements());
+        verify(meteorologiaRepositoryMock, times(1)).findByCidade(paginacao, "Cidade1");
+    }
+
+    @Test
+    void buscarUmaCidadeNaoRegistrada() {
+        Pageable paginacao = PageRequest.of(0,10);
+        List<MeteorologiaEntity> listaMeteorologias = List.of();
+        Page<MeteorologiaEntity> pagina = new PageImpl<>(listaMeteorologias, paginacao, 1);
+
+        when(meteorologiaRepositoryMock.findByCidade(paginacao, "Cidade1")).thenReturn(pagina);
+
+        Assertions.assertThrows(CidadeNotFoundException.class,
+                () -> meteorologiaService.listarPorCidade(paginacao, "Cidade1"));
     }
 
     @Test
