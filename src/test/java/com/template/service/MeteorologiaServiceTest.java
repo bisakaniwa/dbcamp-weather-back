@@ -103,7 +103,6 @@ public class MeteorologiaServiceTest {
 
         Page<MeteorologiaDTOReadOnly> paginaMeteorologias = meteorologiaService.listarPorCidade(paginacao, "Cidade1");
 
-        Assertions.assertNotNull(listaMeteorologias);
         Assertions.assertNotNull(paginaMeteorologias);
         Assertions.assertEquals(2, paginaMeteorologias.getTotalElements());
         verify(meteorologiaRepositoryMock, times(1)).findByCidade(paginacao, "Cidade1");
