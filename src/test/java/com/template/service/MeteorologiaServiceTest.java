@@ -110,7 +110,7 @@ public class MeteorologiaServiceTest {
     }
 
     @Test
-    void buscarUmaCidadeNaoRegistrada() {
+    void buscarUmaCidadeNaoRegistradaPaginado() {
         Pageable paginacao = PageRequest.of(0, 10);
         List<MeteorologiaEntity> listaMeteorologias = List.of();
         Page<MeteorologiaEntity> pagina = new PageImpl<>(listaMeteorologias, paginacao, 1);
@@ -142,6 +142,14 @@ public class MeteorologiaServiceTest {
         Assertions.assertEquals(cidade1.getPrecipitacao(), tempoNaCidade1.precipitacao());
         Assertions.assertEquals(cidade1.getUmidade(), tempoNaCidade1.umidade());
         Assertions.assertEquals(cidade1.getVelocidadeVentos(), tempoNaCidade1.velocidadeVentos());
+    }
+
+    @Test
+    void buscarMeteorologiaDeHojeParaCidadeNaoCadastrada() {
+        when(meteorologiaRepositoryMock.findByCidade("Cidade3")).thenReturn(List.of());
+
+        Assertions.assertThrows(CidadeNotFoundException.class,
+                () -> meteorologiaService.tempoHoje("Cidade3"));
     }
 
     @Test

@@ -45,11 +45,15 @@ public class MeteorologiaService {
         LocalDate hoje = LocalDate.now();
         List<MeteorologiaEntity> cidadeBuscada = meteorologiaRepository.findByCidade(cidade);
 
-        return cidadeBuscada.stream()
-                .filter(registros -> registros.getData().equals(hoje))
-                .findFirst()
-                .map(cidadeHoje -> criarMeteorologiaHoje(cidadeHoje))
-                .orElseThrow(() -> new MeteorologiaNotFoundException("Registro não encontrado."));
+        if (cidadeBuscada.isEmpty()) {
+            throw new CidadeNotFoundException("Cidade não encontrada");
+        } else {
+            return cidadeBuscada.stream()
+                    .filter(registros -> registros.getData().equals(hoje))
+                    .findFirst()
+                    .map(cidadeHoje -> criarMeteorologiaHoje(cidadeHoje))
+                    .orElseThrow(() -> new MeteorologiaNotFoundException("Registro não encontrado."));
+        }
     }
 
     private static MeteorologiaHojeDTOReadOnly criarMeteorologiaHoje(MeteorologiaEntity cidadeHoje) {
