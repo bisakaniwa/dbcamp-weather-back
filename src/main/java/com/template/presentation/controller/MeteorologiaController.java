@@ -2,6 +2,7 @@ package com.template.presentation.controller;
 
 import com.template.business.services.MeteorologiaService;
 import com.template.data.DTOs.MeteorologiaDTOReadOnly;
+import com.template.data.DTOs.MeteorologiaHojeDTOReadOnly;
 import com.template.data.entity.MeteorologiaEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +42,11 @@ public class MeteorologiaController {
             @PageableDefault(sort = {"data"}, direction = Sort.Direction.DESC) Pageable paginacao,
             @PathVariable String cidade) {
         return ResponseEntity.ok(meteorologiaService.listarPorCidade(paginacao, cidade));
+    }
+
+    @GetMapping("/{cidade}/hoje")
+    public ResponseEntity<MeteorologiaHojeDTOReadOnly> buscarTempoHoje(@PathVariable String cidade) {
+        return ResponseEntity.ok(meteorologiaService.tempoHoje(cidade));
     }
 
     @PostMapping
