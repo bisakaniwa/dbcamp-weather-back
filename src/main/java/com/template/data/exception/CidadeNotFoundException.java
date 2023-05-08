@@ -1,6 +1,8 @@
 package com.template.data.exception;
 
-public class CidadeNotFoundException extends RuntimeException {
+import org.webjars.NotFoundException;
+
+public class CidadeNotFoundException extends NotFoundException {
     public CidadeNotFoundException(String message) {
         super(message);
     }
