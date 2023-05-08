@@ -1,7 +1,8 @@
 package com.template.business.services;
 
-import com.template.data.DTOs.MeteorologiaDTOLista;
+import com.template.data.DTOs.MeteorologiaDTOReadOnly;
 import com.template.data.entity.MeteorologiaEntity;
+import com.template.data.exception.CidadeNotFoundException;
 import com.template.data.repository.MeteorologiaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,12 +20,22 @@ public class MeteorologiaService {
         this.meteorologiaRepository = meteorologiaRepository;
     }
 
-    public Page<MeteorologiaDTOLista> listarRegistros(Pageable paginacao) {
-        return meteorologiaRepository.findAll(paginacao).map(MeteorologiaDTOLista::new);
+    public Page<MeteorologiaDTOReadOnly> listarRegistros(Pageable paginacao) {
+        return meteorologiaRepository.findAll(paginacao).map(MeteorologiaDTOReadOnly::new);
     }
 
     public List<MeteorologiaEntity> listarTudo() {
         return meteorologiaRepository.findAll();
+    }
+
+    public Page<MeteorologiaDTOReadOnly> listarPorCidade(Pageable paginacao, String cidade) {
+        Page<MeteorologiaDTOReadOnly> buscar = meteorologiaRepository.findByCidade(paginacao, cidade)
+                .map(MeteorologiaDTOReadOnly::new);
+        if (buscar.isEmpty()) {
+            throw new CidadeNotFoundException("Cidade não encontrada.");
+        } else {
+            return buscar;
+        }
     }
 
     public MeteorologiaEntity novoRegistro(MeteorologiaEntity meteorologia) {

@@ -1,6 +1,8 @@
 package com.template.data.exception;
 
-public class MeteorologiaNotFoundException extends RuntimeException {
+import org.webjars.NotFoundException;
+
+public class MeteorologiaNotFoundException extends NotFoundException {
     public MeteorologiaNotFoundException(String message) {
         super(message);
     }
