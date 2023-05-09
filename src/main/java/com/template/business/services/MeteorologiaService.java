@@ -1,13 +1,16 @@
 package com.template.business.services;
 
 import com.template.data.DTOs.MeteorologiaDTOReadOnly;
+import com.template.data.DTOs.MeteorologiaHojeDTOReadOnly;
 import com.template.data.entity.MeteorologiaEntity;
 import com.template.data.exception.CidadeNotFoundException;
+import com.template.data.exception.MeteorologiaNotFoundException;
 import com.template.data.repository.MeteorologiaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import java.util.List;
@@ -36,6 +39,35 @@ public class MeteorologiaService {
         } else {
             return buscar;
         }
+    }
+
+    public MeteorologiaHojeDTOReadOnly tempoHoje(String cidade) {
+        LocalDate hoje = LocalDate.now();
+        List<MeteorologiaEntity> cidadeBuscada = meteorologiaRepository.findByCidade(cidade);
+
+        if (cidadeBuscada.isEmpty()) {
+            throw new CidadeNotFoundException("Cidade não encontrada");
+        } else {
+            return cidadeBuscada.stream()
+                    .filter(registros -> registros.getData().equals(hoje))
+                    .findFirst()
+                    .map(cidadeHoje -> criarMeteorologiaHoje(cidadeHoje))
+                    .orElseThrow(() -> new MeteorologiaNotFoundException("Registro não encontrado."));
+        }
+    }
+
+    private static MeteorologiaHojeDTOReadOnly criarMeteorologiaHoje(MeteorologiaEntity cidadeHoje) {
+        return new MeteorologiaHojeDTOReadOnly(
+                cidadeHoje.getId(),
+                cidadeHoje.getCidade(),
+                cidadeHoje.getData(),
+                cidadeHoje.getTempoDia(),
+                cidadeHoje.getTempoNoite(),
+                cidadeHoje.getTemperaturaMaxima(),
+                cidadeHoje.getTemperaturaMinima(),
+                cidadeHoje.getPrecipitacao(),
+                cidadeHoje.getUmidade(),
+                cidadeHoje.getVelocidadeVentos());
     }
 
     public MeteorologiaEntity novoRegistro(MeteorologiaEntity meteorologia) {

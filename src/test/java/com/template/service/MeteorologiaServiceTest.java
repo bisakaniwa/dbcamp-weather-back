@@ -2,6 +2,7 @@ package com.template.service;
 
 import com.template.business.services.MeteorologiaService;
 import com.template.data.DTOs.MeteorologiaDTOReadOnly;
+import com.template.data.DTOs.MeteorologiaHojeDTOReadOnly;
 import com.template.data.entity.MeteorologiaEntity;
 import com.template.data.enumKind.TempoDia;
 import com.template.data.enumKind.TempoNoite;
@@ -58,7 +59,7 @@ public class MeteorologiaServiceTest {
         MeteorologiaEntity item02 = outraMeteorologia();
         MeteorologiaEntity item03 = new MeteorologiaEntity();
 
-        Pageable paginacao = PageRequest.of(0,10);
+        Pageable paginacao = PageRequest.of(0, 10);
         List<MeteorologiaEntity> listaMeteorologias = List.of(item01, item02, item03);
         Page<MeteorologiaEntity> pagina = new PageImpl<>(listaMeteorologias, paginacao, 1);
 
@@ -93,9 +94,9 @@ public class MeteorologiaServiceTest {
         MeteorologiaEntity cidade1 = novaMeteorologia();
         MeteorologiaEntity maisUmRegistroCidade1 = new MeteorologiaEntity(1234L, "Cidade1",
                 LocalDate.of(2022, 5, 3), TempoDia.TEMPESTADE, TempoNoite.LIMPO, 26,
-                15, 2, 3,0);
+                15, 2, 3, 0);
 
-        Pageable paginacao = PageRequest.of(0,10);
+        Pageable paginacao = PageRequest.of(0, 10);
         List<MeteorologiaEntity> listaMeteorologias = List.of(cidade1, maisUmRegistroCidade1);
         Page<MeteorologiaEntity> pagina = new PageImpl<>(listaMeteorologias, paginacao, 1);
 
@@ -109,8 +110,8 @@ public class MeteorologiaServiceTest {
     }
 
     @Test
-    void buscarUmaCidadeNaoRegistrada() {
-        Pageable paginacao = PageRequest.of(0,10);
+    void buscarUmaCidadeNaoRegistradaPaginado() {
+        Pageable paginacao = PageRequest.of(0, 10);
         List<MeteorologiaEntity> listaMeteorologias = List.of();
         Page<MeteorologiaEntity> pagina = new PageImpl<>(listaMeteorologias, paginacao, 1);
 
@@ -118,6 +119,47 @@ public class MeteorologiaServiceTest {
 
         Assertions.assertThrows(CidadeNotFoundException.class,
                 () -> meteorologiaService.listarPorCidade(paginacao, "Cidade1"));
+    }
+
+    @Test
+    void buscarMeteorologiaDeHojeDaCidade1ComSucesso() {
+        MeteorologiaEntity cidade1 = new MeteorologiaEntity(1234L, "Cidade1",
+                LocalDate.now(), TempoDia.TEMPESTADE, TempoNoite.LIMPO, 26,
+                15, 2, 3, 0);
+
+        when(meteorologiaRepositoryMock.findByCidade("Cidade1")).thenReturn(List.of(cidade1));
+
+        MeteorologiaHojeDTOReadOnly tempoNaCidade1 = meteorologiaService.tempoHoje("Cidade1");
+
+        Assertions.assertNotNull(tempoNaCidade1);
+        Assertions.assertEquals(cidade1.getId(), tempoNaCidade1.id());
+        Assertions.assertEquals(cidade1.getCidade(), tempoNaCidade1.cidade());
+        Assertions.assertEquals(cidade1.getData(), tempoNaCidade1.data());
+        Assertions.assertEquals(cidade1.getTempoDia(), tempoNaCidade1.tempoDia());
+        Assertions.assertEquals(cidade1.getTempoNoite(), tempoNaCidade1.tempoNoite());
+        Assertions.assertEquals(cidade1.getTemperaturaMaxima(), tempoNaCidade1.temperaturaMaxima());
+        Assertions.assertEquals(cidade1.getTemperaturaMinima(), tempoNaCidade1.temperaturaMinima());
+        Assertions.assertEquals(cidade1.getPrecipitacao(), tempoNaCidade1.precipitacao());
+        Assertions.assertEquals(cidade1.getUmidade(), tempoNaCidade1.umidade());
+        Assertions.assertEquals(cidade1.getVelocidadeVentos(), tempoNaCidade1.velocidadeVentos());
+    }
+
+    @Test
+    void buscarMeteorologiaDeHojeParaCidadeNaoCadastrada() {
+        when(meteorologiaRepositoryMock.findByCidade("Cidade3")).thenReturn(List.of());
+
+        Assertions.assertThrows(CidadeNotFoundException.class,
+                () -> meteorologiaService.tempoHoje("Cidade3"));
+    }
+
+    @Test
+    void buscarRegistroNaoCadastradoParaHojeNaCidade1() {
+        MeteorologiaEntity cidade1 = novaMeteorologia();
+
+        when(meteorologiaRepositoryMock.findByCidade("Cidade1")).thenReturn(List.of(cidade1));
+
+        Assertions.assertThrows(MeteorologiaNotFoundException.class,
+                () -> meteorologiaService.tempoHoje("Cidade1"));
     }
 
     @Test
