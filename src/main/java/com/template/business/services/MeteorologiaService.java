@@ -8,6 +8,7 @@ import com.template.data.repository.MeteorologiaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -45,6 +46,7 @@ public class MeteorologiaService {
         return meteorologiaRepository.save(meteorologia);
     }
 
+    @Transactional
     public MeteorologiaEntity atualizarRegistro(MeteorologiaEntity meteorologia) {
         Optional<MeteorologiaEntity> registroBuscado = meteorologiaRepository.findById(meteorologia.getId());
 
