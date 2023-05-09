@@ -204,10 +204,18 @@ public class MeteorologiaServiceTest {
         when(meteorologiaRepositoryMock.findById(meteorologia2.getId())).thenReturn(Optional.of(meteorologia2));
         when(meteorologiaRepositoryMock.save(any())).thenReturn(meteorologia2);
 
-        var responseService = meteorologiaService.atualizarRegistro(meteorologia1);
+        MeteorologiaEntity responseService = meteorologiaService.atualizarRegistro(meteorologia1);
 
-        Assertions.assertEquals(responseService.getTempoDia(), meteorologia2.getTempoDia() );
+        Assertions.assertEquals(responseService.getTempoDia(), meteorologia2.getTempoDia());
+    }
 
+    @Test
+    void atualizarMeteorologiaInexistenteEFalhar() {
+        when(meteorologiaRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
+
+        verify(meteorologiaRepositoryMock, times(0)).save(novaMeteorologia());
+        Assertions.assertThrows(MeteorologiaNotFoundException.class,
+                () -> meteorologiaService.atualizarRegistro(novaMeteorologia()));
     }
 
     @Test
