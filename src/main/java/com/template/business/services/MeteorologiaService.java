@@ -27,7 +27,13 @@ public class MeteorologiaService {
     }
 
     public Page<MeteorologiaDTOReadOnly> listarRegistros(Pageable paginacao) {
-        return meteorologiaRepository.findAll(paginacao).map(MeteorologiaDTOReadOnly::new);
+        Page<MeteorologiaDTOReadOnly> buscar = meteorologiaRepository.findAll(paginacao)
+                .map(MeteorologiaDTOReadOnly::new);
+        if (buscar.isEmpty()) {
+            throw new MeteorologiaNotFoundException("Não há registros.");
+        } else {
+            return buscar;
+        }
     }
 
     public List<MeteorologiaEntity> listarTudo() {
@@ -73,6 +79,7 @@ public class MeteorologiaService {
                 cidadeHoje.getVelocidadeVentos());
     }
 
+    // Validar?
     public MeteorologiaEntity novoRegistro(MeteorologiaEntity meteorologia) {
         return meteorologiaRepository.save(meteorologia);
     }
@@ -102,7 +109,11 @@ public class MeteorologiaService {
     }
 
     public void excluirRegistro(long id) {
-        Optional<MeteorologiaEntity> meteorologia = meteorologiaRepository.findById(id);
-        meteorologiaRepository.deleteById(id);
+        Optional<MeteorologiaEntity> registro = meteorologiaRepository.findById(id);
+        if (registro.isEmpty()) {
+            throw new MeteorologiaNotFoundException("Registro não encontrado.");
+        } else {
+            meteorologiaRepository.deleteById(id);
+        }
     }
 }

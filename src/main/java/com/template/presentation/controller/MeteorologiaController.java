@@ -65,12 +65,6 @@ public class MeteorologiaController {
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<MeteorologiaEntity> excluirRegistro(@PathVariable long id) {
-        try {
-            meteorologiaService.excluirRegistro(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 }
