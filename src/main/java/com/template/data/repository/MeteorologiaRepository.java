@@ -12,4 +12,6 @@ public interface MeteorologiaRepository extends JpaRepository<MeteorologiaEntity
     @Override
     Page<MeteorologiaEntity> findAll(Pageable pageable);
 
+    Page<MeteorologiaEntity> findByCidade(Pageable pageable, String cidade);
+
 }

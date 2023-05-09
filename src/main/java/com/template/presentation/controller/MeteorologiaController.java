@@ -37,6 +37,13 @@ public class MeteorologiaController {
         return ResponseEntity.ok(meteorologiaService.listarTudo());
     }
 
+    @GetMapping("/{cidade}")
+    public ResponseEntity<Page<MeteorologiaDTOReadOnly>> buscarPorCidade(
+            @PageableDefault(sort = {"data"}, direction = Sort.Direction.DESC) Pageable paginacao,
+            @PathVariable String cidade) {
+        return ResponseEntity.ok(meteorologiaService.listarPorCidade(paginacao, cidade));
+    }
+
     @PostMapping
     @Transactional
     public ResponseEntity<MeteorologiaEntity> criarRegistro(@RequestBody @Valid MeteorologiaEntity meteorologia) {

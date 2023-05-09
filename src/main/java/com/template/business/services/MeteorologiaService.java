@@ -2,6 +2,7 @@ package com.template.business.services;
 
 import com.template.data.DTOs.MeteorologiaDTOReadOnly;
 import com.template.data.entity.MeteorologiaEntity;
+import com.template.data.exception.CidadeNotFoundException;
 import com.template.data.repository.MeteorologiaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,16 @@ public class MeteorologiaService {
         return meteorologiaRepository.findAll();
     }
 
+    public Page<MeteorologiaDTOReadOnly> listarPorCidade(Pageable paginacao, String cidade) {
+        Page<MeteorologiaDTOReadOnly> buscar = meteorologiaRepository.findByCidade(paginacao, cidade)
+                .map(MeteorologiaDTOReadOnly::new);
+        if (buscar.isEmpty()) {
+            throw new CidadeNotFoundException("Cidade não encontrada.");
+        } else {
+            return buscar;
+        }
+    }
+
     public MeteorologiaEntity novoRegistro(MeteorologiaEntity meteorologia) {
         return meteorologiaRepository.save(meteorologia);
     }
@@ -37,8 +48,8 @@ public class MeteorologiaService {
         if (atualizacao.isPresent()) {
             atualizacao.get().setCidade(meteorologia.getCidade());
             atualizacao.get().setData(meteorologia.getData());
-            atualizacao.get().setTempo(meteorologia.getTempo());
-            atualizacao.get().setTurno(meteorologia.getTurno());
+            atualizacao.get().setTempoDia(meteorologia.getTempoDia());
+            atualizacao.get().setTempoNoite(meteorologia.getTempoNoite());
             atualizacao.get().setTemperaturaMaxima(meteorologia.getTemperaturaMaxima());
             atualizacao.get().setTemperaturaMinima(meteorologia.getTemperaturaMinima());
             atualizacao.get().setPrecipitacao(meteorologia.getPrecipitacao());
