@@ -3,6 +3,7 @@ package com.template.business.services;
 import com.template.data.DTOs.MeteorologiaDTOReadOnly;
 import com.template.data.entity.MeteorologiaEntity;
 import com.template.data.exception.CidadeNotFoundException;
+import com.template.data.exception.MeteorologiaNotFoundException;
 import com.template.data.repository.MeteorologiaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 import java.util.List;
+
+import static java.util.Objects.requireNonNullElse;
 
 @Service
 public class MeteorologiaService {
@@ -43,21 +46,25 @@ public class MeteorologiaService {
     }
 
     public MeteorologiaEntity atualizarRegistro(MeteorologiaEntity meteorologia) {
-        Optional<MeteorologiaEntity> atualizacao = meteorologiaRepository.findById(meteorologia.getId());
+        Optional<MeteorologiaEntity> registroBuscado = meteorologiaRepository.findById(meteorologia.getId());
 
-        if (atualizacao.isPresent()) {
-            atualizacao.get().setCidade(meteorologia.getCidade());
-            atualizacao.get().setData(meteorologia.getData());
-            atualizacao.get().setTempoDia(meteorologia.getTempoDia());
-            atualizacao.get().setTempoNoite(meteorologia.getTempoNoite());
-            atualizacao.get().setTemperaturaMaxima(meteorologia.getTemperaturaMaxima());
-            atualizacao.get().setTemperaturaMinima(meteorologia.getTemperaturaMinima());
-            atualizacao.get().setPrecipitacao(meteorologia.getPrecipitacao());
-            atualizacao.get().setUmidade(meteorologia.getUmidade());
-            atualizacao.get().setVelocidadeVentos(meteorologia.getVelocidadeVentos());
-            return meteorologiaRepository.save(atualizacao.get());
+        if (registroBuscado.isEmpty()) {
+            throw new MeteorologiaNotFoundException("Registro não encontrado");
         } else {
-            return meteorologia;
+            MeteorologiaEntity registroAtualizado = registroBuscado.get();
+            registroAtualizado.setCidade(requireNonNullElse(meteorologia.getCidade(), registroAtualizado.getCidade()));
+            registroAtualizado.setData(requireNonNullElse(meteorologia.getData(), registroAtualizado.getData()));
+            registroAtualizado.setTempoDia(requireNonNullElse(meteorologia.getTempoDia(), registroAtualizado.getTempoDia()));
+            registroAtualizado.setTempoNoite(requireNonNullElse(meteorologia.getTempoNoite(), registroAtualizado.getTempoNoite()));
+            registroAtualizado.setTemperaturaMaxima(requireNonNullElse(meteorologia.getTemperaturaMaxima(),
+                    registroAtualizado.getTemperaturaMaxima()));
+            registroAtualizado.setTemperaturaMinima(requireNonNullElse(meteorologia.getTemperaturaMinima(),
+                    registroAtualizado.getTemperaturaMinima()));
+            registroAtualizado.setPrecipitacao(requireNonNullElse(meteorologia.getPrecipitacao(), registroAtualizado.getPrecipitacao()));
+            registroAtualizado.setUmidade(requireNonNullElse(meteorologia.getUmidade(), registroAtualizado.getUmidade()));
+            registroAtualizado.setVelocidadeVentos(requireNonNullElse(meteorologia.getVelocidadeVentos(),
+                    registroAtualizado.getVelocidadeVentos()));
+            return meteorologiaRepository.save(registroAtualizado);
         }
     }
 

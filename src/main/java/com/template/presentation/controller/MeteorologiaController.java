@@ -50,7 +50,7 @@ public class MeteorologiaController {
         return new ResponseEntity<>(meteorologiaService.novoRegistro(meteorologia), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping
     @Transactional
     public ResponseEntity<MeteorologiaEntity> atualizarRegistro(@RequestBody @Valid MeteorologiaEntity meteorologia) {
         return ResponseEntity.ok(meteorologiaService.atualizarRegistro(meteorologia));
