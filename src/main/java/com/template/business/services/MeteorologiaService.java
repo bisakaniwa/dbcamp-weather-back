@@ -1,7 +1,6 @@
 package com.template.business.services;
 
-import com.template.data.DTOs.MeteorologiaDTOReadOnly;
-import com.template.data.DTOs.MeteorologiaHojeDTOReadOnly;
+import com.template.data.DTOs.MeteorologiaDTODadosLista;
 import com.template.data.entity.MeteorologiaEntity;
 import com.template.data.exception.CidadeNotFoundException;
 import com.template.data.exception.MeteorologiaNotFoundException;
@@ -26,11 +25,11 @@ public class MeteorologiaService {
         this.meteorologiaRepository = meteorologiaRepository;
     }
 
-    public Page<MeteorologiaDTOReadOnly> listarRegistros(Pageable paginacao) {
-        Page<MeteorologiaDTOReadOnly> buscar = meteorologiaRepository.findAll(paginacao)
-                .map(MeteorologiaDTOReadOnly::new);
+    public Page<MeteorologiaDTODadosLista> listarRegistros(Pageable paginacao) {
+        Page<MeteorologiaDTODadosLista> buscar = meteorologiaRepository.findAll(paginacao)
+                .map(MeteorologiaDTODadosLista::new);
         if (buscar.isEmpty()) {
-            throw new MeteorologiaNotFoundException("Não há registros.");
+            throw new MeteorologiaNotFoundException("Não há registros cadastrados.");
         } else {
             return buscar;
         }
@@ -40,9 +39,9 @@ public class MeteorologiaService {
         return meteorologiaRepository.findAll();
     }
 
-    public Page<MeteorologiaDTOReadOnly> listarPorCidade(Pageable paginacao, String cidade) {
-        Page<MeteorologiaDTOReadOnly> buscar = meteorologiaRepository.findByCidade(paginacao, cidade)
-                .map(MeteorologiaDTOReadOnly::new);
+    public Page<MeteorologiaDTODadosLista> listarPorCidade(Pageable paginacao, String cidade) {
+        Page<MeteorologiaDTODadosLista> buscar = meteorologiaRepository.findByCidade(paginacao, cidade)
+                .map(MeteorologiaDTODadosLista::new);
         if (buscar.isEmpty()) {
             throw new CidadeNotFoundException("Cidade não encontrada.");
         } else {
@@ -50,7 +49,7 @@ public class MeteorologiaService {
         }
     }
 
-    public MeteorologiaHojeDTOReadOnly tempoHoje(String cidade) {
+    public MeteorologiaEntity tempoHoje(String cidade) {
         LocalDate hoje = LocalDate.now();
         List<MeteorologiaEntity> cidadeBuscada = meteorologiaRepository.findByCidade(cidade);
 
@@ -65,8 +64,8 @@ public class MeteorologiaService {
         }
     }
 
-    private static MeteorologiaHojeDTOReadOnly criarMeteorologiaHoje(MeteorologiaEntity cidadeHoje) {
-        return new MeteorologiaHojeDTOReadOnly(
+    private static MeteorologiaEntity criarMeteorologiaHoje(MeteorologiaEntity cidadeHoje) {
+        return new MeteorologiaEntity(
                 cidadeHoje.getId(),
                 cidadeHoje.getCidade(),
                 cidadeHoje.getData(),
@@ -79,7 +78,7 @@ public class MeteorologiaService {
                 cidadeHoje.getVelocidadeVentos());
     }
 
-    // Validar?
+    @Transactional
     public MeteorologiaEntity novoRegistro(MeteorologiaEntity meteorologia) {
         return meteorologiaRepository.save(meteorologia);
     }
@@ -108,6 +107,7 @@ public class MeteorologiaService {
         }
     }
 
+    @Transactional
     public void excluirRegistro(long id) {
         Optional<MeteorologiaEntity> registro = meteorologiaRepository.findById(id);
         if (registro.isEmpty()) {
