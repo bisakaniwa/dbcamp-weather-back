@@ -34,25 +34,25 @@ public class MeteorologiaEntity {
 
     @NotNull
     @Column(name = "temperatura_maxima")
-    private float temperaturaMaxima;
+    private Float temperaturaMaxima;
 
     @NotNull
     @Column(name = "temperatura_minima")
-    private float temperaturaMinima;
+    private Float temperaturaMinima;
 
     @NotNull
-    private float precipitacao;
+    private Float precipitacao;
 
     @NotNull
-    private float umidade;
+    private Float umidade;
 
     @NotNull
     @Column(name = "velocidade_ventos")
-    private float velocidadeVentos;
+    private Float velocidadeVentos;
 
     public MeteorologiaEntity(long id, String cidade, LocalDate data, TempoDia tempoDia, TempoNoite tempoNoite,
-                              float temperaturaMaxima, float temperaturaMinima, float precipitacao, float umidade,
-                              float velocidadeVentos) {
+                              Float temperaturaMaxima, Float temperaturaMinima, Float precipitacao, Float umidade,
+                              Float velocidadeVentos) {
         this.id = id;
         this.cidade = cidade;
         this.data = data;
@@ -71,7 +71,6 @@ public class MeteorologiaEntity {
     public long getId() {
         return id;
     }
-
 
     public String getCidade() {
         return cidade;
@@ -105,43 +104,43 @@ public class MeteorologiaEntity {
         this.tempoNoite = tempoNoite;
     }
 
-    public float getTemperaturaMaxima() {
+    public Float getTemperaturaMaxima() {
         return temperaturaMaxima;
     }
 
-    public void setTemperaturaMaxima(float temperaturaMaxima) {
+    public void setTemperaturaMaxima(Float temperaturaMaxima) {
         this.temperaturaMaxima = temperaturaMaxima;
     }
 
-    public float getTemperaturaMinima() {
+    public Float getTemperaturaMinima() {
         return temperaturaMinima;
     }
 
-    public void setTemperaturaMinima(float temperaturaMinima) {
+    public void setTemperaturaMinima(Float temperaturaMinima) {
         this.temperaturaMinima = temperaturaMinima;
     }
 
-    public float getPrecipitacao() {
+    public Float getPrecipitacao() {
         return precipitacao;
     }
 
-    public void setPrecipitacao(float precipitacao) {
+    public void setPrecipitacao(Float precipitacao) {
         this.precipitacao = precipitacao;
     }
 
-    public float getUmidade() {
+    public Float getUmidade() {
         return umidade;
     }
 
-    public void setUmidade(float umidade) {
+    public void setUmidade(Float umidade) {
         this.umidade = umidade;
     }
 
-    public float getVelocidadeVentos() {
+    public Float getVelocidadeVentos() {
         return velocidadeVentos;
     }
 
-    public void setVelocidadeVentos(float velocidadeVentos) {
+    public void setVelocidadeVentos(Float velocidadeVentos) {
         this.velocidadeVentos = velocidadeVentos;
     }
 }

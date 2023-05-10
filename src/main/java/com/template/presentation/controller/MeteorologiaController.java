@@ -4,6 +4,7 @@ import com.template.business.services.MeteorologiaService;
 import com.template.data.DTOs.MeteorologiaDTOReadOnly;
 import com.template.data.DTOs.MeteorologiaHojeDTOReadOnly;
 import com.template.data.entity.MeteorologiaEntity;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -51,8 +52,14 @@ public class MeteorologiaController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<MeteorologiaEntity> criarRegistro(@RequestBody MeteorologiaEntity meteorologia) {
+    public ResponseEntity<MeteorologiaEntity> criarRegistro(@RequestBody @Valid MeteorologiaEntity meteorologia) {
         return new ResponseEntity<>(meteorologiaService.novoRegistro(meteorologia), HttpStatus.CREATED);
+    }
+
+    @PutMapping
+    @Transactional
+    public ResponseEntity<MeteorologiaEntity> atualizarRegistro(@RequestBody @Valid MeteorologiaEntity meteorologia) {
+        return ResponseEntity.ok(meteorologiaService.atualizarRegistro(meteorologia));
     }
 
     @DeleteMapping("/{id}")

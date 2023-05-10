@@ -9,11 +9,14 @@ import com.template.data.repository.MeteorologiaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 import java.util.List;
+
+import static java.util.Objects.requireNonNullElse;
 
 @Service
 public class MeteorologiaService {
@@ -72,6 +75,30 @@ public class MeteorologiaService {
 
     public MeteorologiaEntity novoRegistro(MeteorologiaEntity meteorologia) {
         return meteorologiaRepository.save(meteorologia);
+    }
+
+    @Transactional
+    public MeteorologiaEntity atualizarRegistro(MeteorologiaEntity meteorologia) {
+        Optional<MeteorologiaEntity> registroBuscado = meteorologiaRepository.findById(meteorologia.getId());
+
+        if (registroBuscado.isEmpty()) {
+            throw new MeteorologiaNotFoundException("Registro não encontrado");
+        } else {
+            MeteorologiaEntity registroAtualizado = registroBuscado.get();
+            registroAtualizado.setCidade(requireNonNullElse(meteorologia.getCidade(), registroAtualizado.getCidade()));
+            registroAtualizado.setData(requireNonNullElse(meteorologia.getData(), registroAtualizado.getData()));
+            registroAtualizado.setTempoDia(requireNonNullElse(meteorologia.getTempoDia(), registroAtualizado.getTempoDia()));
+            registroAtualizado.setTempoNoite(requireNonNullElse(meteorologia.getTempoNoite(), registroAtualizado.getTempoNoite()));
+            registroAtualizado.setTemperaturaMaxima(requireNonNullElse(meteorologia.getTemperaturaMaxima(),
+                    registroAtualizado.getTemperaturaMaxima()));
+            registroAtualizado.setTemperaturaMinima(requireNonNullElse(meteorologia.getTemperaturaMinima(),
+                    registroAtualizado.getTemperaturaMinima()));
+            registroAtualizado.setPrecipitacao(requireNonNullElse(meteorologia.getPrecipitacao(), registroAtualizado.getPrecipitacao()));
+            registroAtualizado.setUmidade(requireNonNullElse(meteorologia.getUmidade(), registroAtualizado.getUmidade()));
+            registroAtualizado.setVelocidadeVentos(requireNonNullElse(meteorologia.getVelocidadeVentos(),
+                    registroAtualizado.getVelocidadeVentos()));
+            return meteorologiaRepository.save(registroAtualizado);
+        }
     }
 
     public void excluirRegistro(long id) {
