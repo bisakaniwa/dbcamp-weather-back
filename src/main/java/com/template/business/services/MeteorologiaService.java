@@ -78,6 +78,15 @@ public class MeteorologiaService {
                 cidadeHoje.getVelocidadeVentos());
     }
 
+    public Page<MeteorologiaEntity> tempoSemana(String cidade) {
+        LocalDate amanha = LocalDate.now().plusDays(1);
+        LocalDate ultimoDia = LocalDate.now().plusDays(6);
+        List<MeteorologiaEntity> registrosCidade = meteorologiaRepository.findByCidade(cidade);
+        List<MeteorologiaEntity> registrosSemana = registrosCidade.stream()
+                .filter(registros -> registros.getData().
+                        );
+    }
+
     @Transactional
     public MeteorologiaEntity novoRegistro(MeteorologiaEntity meteorologia) {
         return meteorologiaRepository.save(meteorologia);
