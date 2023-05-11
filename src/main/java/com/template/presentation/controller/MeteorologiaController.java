@@ -50,7 +50,7 @@ public class MeteorologiaController {
 
     @GetMapping("/{cidade}/semana")
     public ResponseEntity<Page<MeteorologiaEntity>> buscarTempoSemana(
-            @PageableDefault(sort = {"data"}, direction = Sort.Direction.DESC) Pageable paginacao,
+            @PageableDefault(sort = {"data"}, direction = Sort.Direction.ASC) Pageable paginacao,
             @PathVariable String cidade) {
         return ResponseEntity.ok(meteorologiaService.tempoSemana(paginacao, cidade));
     }
