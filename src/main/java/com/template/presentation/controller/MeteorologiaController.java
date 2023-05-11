@@ -4,6 +4,8 @@ import com.template.business.services.MeteorologiaService;
 import com.template.data.DTOs.MeteorologiaDTODadosLista;
 import com.template.data.entity.MeteorologiaEntity;
 import jakarta.validation.Valid;
+import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Description;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,17 +27,20 @@ public class MeteorologiaController {
         this.meteorologiaService = meteorologiaService;
     }
 
+    @Description("Buscar a primeira página de todos os registros disponíveis, em ordem decrescente de data.")
     @GetMapping
     public ResponseEntity<Page<MeteorologiaDTODadosLista>> buscarRegistros(
             @PageableDefault(sort = {"data"}, direction = Sort.Direction.DESC) Pageable paginacao) {
         return ResponseEntity.ok(meteorologiaService.listarRegistros(paginacao));
     }
 
+    @Description("Buscar todos os registros completos em ordem de cadastro.")
     @GetMapping("/all")
     public ResponseEntity<List<MeteorologiaEntity>> buscarTudo() {
         return ResponseEntity.ok(meteorologiaService.listarTudo());
     }
 
+    @Description("Buscar a primeira página dentre todos os registros de uma cidade, em ordem decrescente de data.")
     @GetMapping("/{cidade}")
     public ResponseEntity<Page<MeteorologiaDTODadosLista>> buscarPorCidade(
             @PageableDefault(sort = {"data"}, direction = Sort.Direction.DESC) Pageable paginacao,
@@ -43,21 +48,25 @@ public class MeteorologiaController {
         return ResponseEntity.ok(meteorologiaService.listarPorCidade(paginacao, cidade));
     }
 
+    @Description("Buscar a previsão do tempo completa para o dia atual na cidade pesquisada.")
     @GetMapping("/{cidade}/hoje")
     public ResponseEntity<MeteorologiaEntity> buscarTempoHoje(@PathVariable String cidade) {
         return ResponseEntity.ok(meteorologiaService.tempoHoje(cidade));
     }
 
+    @Description("Adicionar um novo registro meteorológico.")
     @PostMapping
     public ResponseEntity<MeteorologiaEntity> criarRegistro(@RequestBody @Valid MeteorologiaEntity meteorologia) {
         return new ResponseEntity<>(meteorologiaService.novoRegistro(meteorologia), HttpStatus.CREATED);
     }
 
+    @Description("Atualizar dados de um registro meteorológico já cadastrado.")
     @PutMapping
     public ResponseEntity<MeteorologiaEntity> atualizarRegistro(@RequestBody @Valid MeteorologiaEntity meteorologia) {
         return ResponseEntity.ok(meteorologiaService.atualizarRegistro(meteorologia));
     }
 
+    @Description("Excluir um registro meteorológico através de seu ID.")
     @DeleteMapping("/{id}")
     public ResponseEntity<MeteorologiaEntity> excluirRegistro(@PathVariable long id) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

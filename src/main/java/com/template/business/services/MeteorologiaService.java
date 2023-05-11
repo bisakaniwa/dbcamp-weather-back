@@ -5,7 +5,11 @@ import com.template.data.entity.MeteorologiaEntity;
 import com.template.data.exception.CidadeNotFoundException;
 import com.template.data.exception.MeteorologiaNotFoundException;
 import com.template.data.repository.MeteorologiaRepository;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,18 +24,23 @@ import static java.util.Objects.requireNonNullElse;
 @Service
 public class MeteorologiaService {
     MeteorologiaRepository meteorologiaRepository;
+    ModelMapper mapper;
 
-    public MeteorologiaService(MeteorologiaRepository meteorologiaRepository) {
+    @Autowired
+    public MeteorologiaService(MeteorologiaRepository meteorologiaRepository, ModelMapper mapper) {
         this.meteorologiaRepository = meteorologiaRepository;
+        this.mapper = mapper;
     }
 
-    public Page<MeteorologiaDTODadosLista> listarRegistros(Pageable paginacao) {
-        Page<MeteorologiaDTODadosLista> buscar = meteorologiaRepository.findAll(paginacao)
-                .map(MeteorologiaDTODadosLista::new);
-        if (buscar.isEmpty()) {
+    public Page<MeteorologiaDTODadosLista> listarRegistros(Pageable pagina) {
+        List<MeteorologiaEntity> listarTodos = meteorologiaRepository.findAll();
+        List<MeteorologiaDTODadosLista> convertido = listarTodos.stream().map(listarRegistros -> mapper
+                .map(listarRegistros, MeteorologiaDTODadosLista.class)).toList();
+
+        if (listarTodos.isEmpty()) {
             throw new MeteorologiaNotFoundException("Não há registros cadastrados.");
         } else {
-            return buscar;
+            return new PageImpl<>(convertido, pagina, 10);
         }
     }
 
@@ -40,12 +49,15 @@ public class MeteorologiaService {
     }
 
     public Page<MeteorologiaDTODadosLista> listarPorCidade(Pageable paginacao, String cidade) {
-        Page<MeteorologiaDTODadosLista> buscar = meteorologiaRepository.findByCidade(paginacao, cidade)
-                .map(MeteorologiaDTODadosLista::new);
-        if (buscar.isEmpty()) {
+        List<MeteorologiaEntity> listarPorCidade = meteorologiaRepository.findByCidade(cidade);
+        List<MeteorologiaDTODadosLista> convertido = listarPorCidade.stream()
+                .map()// conversão de entidade para DTO
+                .toList();
+
+        if (listarPorCidade.isEmpty()) {
             throw new CidadeNotFoundException("Cidade não encontrada.");
         } else {
-            return buscar;
+            return new PageImpl<>(convertido, paginacao, 10);
         }
     }
 
