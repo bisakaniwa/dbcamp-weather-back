@@ -52,6 +52,22 @@ public class MeteorologiaServiceTest {
         );
     }
 
+    public MeteorologiaEntity novoRegistro(String cidade, LocalDate data) {
+        return new MeteorologiaEntity(1L, cidade, data, TempoDia.SOL, TempoNoite.LIMPO,
+                2f, 2f, 2f, 2f, 2f);
+    }
+
+    public List<MeteorologiaEntity> previsaoSemanaCidade1() {
+        MeteorologiaEntity dia1 = novoRegistro("Cidade1", LocalDate.now().plusDays(1));
+        MeteorologiaEntity dia2 = novoRegistro("Cidade1", LocalDate.now().plusDays(2));
+        MeteorologiaEntity dia3 = novoRegistro("Cidade1", LocalDate.now().plusDays(3));
+        MeteorologiaEntity dia4 = novoRegistro("Cidade1", LocalDate.now().plusDays(4));
+        MeteorologiaEntity dia5 = novoRegistro("Cidade1", LocalDate.now().plusDays(5));
+        MeteorologiaEntity dia6 = novoRegistro("Cidade1", LocalDate.now().plusDays(6));
+
+        return List.of(dia1, dia2, dia3, dia4, dia5, dia6);
+    }
+
     @Test
     void buscarPaginaDeRegistrosComSucesso() {
         MeteorologiaEntity meteorologia1 = novaMeteorologia();
@@ -166,6 +182,34 @@ public class MeteorologiaServiceTest {
     }
 
     @Test
+    void buscarMeteorologiaDaSemanaDaCidade1ComSucesso() {
+        List<MeteorologiaEntity> semana = previsaoSemanaCidade1();
+        Pageable paginacao = PageRequest.of(0, 6);
+
+        when(meteorologiaRepositoryMock.findByCidadeAndDataBetween("Cidade1", semana.get(0).getData(),
+                semana.get(5).getData())).thenReturn(semana);
+
+        Page<MeteorologiaEntity> metodoChamado = meteorologiaService.tempoSemana(paginacao, "Cidade1");
+
+        Assertions.assertEquals(6, metodoChamado.getTotalElements());
+        Assertions.assertEquals(6, metodoChamado.getSize());
+
+        verify(meteorologiaRepositoryMock, times(1)).findByCidadeAndDataBetween("Cidade1",
+                semana.get(0).getData(), semana.get(5).getData());
+    }
+
+    @Test
+    void buscarMeteorologiasDaSemanaDaCidade1ENaoEncontrarNada() {
+        Pageable paginacao = PageRequest.of(0, 6);
+
+        when(meteorologiaRepositoryMock.findByCidadeAndDataBetween("Cidade1", LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(6))).thenReturn(List.of());
+
+        Assertions.assertThrows(MeteorologiaNotFoundException.class,
+                () -> meteorologiaService.tempoSemana(paginacao, "Cidade1"));
+    }
+
+    @Test
     void registrarMeteorologiaComSucesso() {
         MeteorologiaEntity meteorologia1 = novaMeteorologia();
         when(meteorologiaRepositoryMock.save(meteorologia1)).thenReturn(meteorologia1);
@@ -227,7 +271,7 @@ public class MeteorologiaServiceTest {
         when(meteorologiaRepositoryMock.findById(1230L)).thenReturn(Optional.of(meteorologia1));
 
         meteorologiaService.excluirRegistro(1230);
-        verify(meteorologiaRepositoryMock, times(1)).deleteById(1230L);
+        verify(meteorologiaRepositoryMock, times(1)).deleteById(meteorologia1.getId());
     }
 
     @Test

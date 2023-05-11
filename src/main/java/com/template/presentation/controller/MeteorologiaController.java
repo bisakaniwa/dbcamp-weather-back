@@ -48,6 +48,13 @@ public class MeteorologiaController {
         return ResponseEntity.ok(meteorologiaService.tempoHoje(cidade));
     }
 
+    @GetMapping("/{cidade}/semana")
+    public ResponseEntity<Page<MeteorologiaEntity>> buscarTempoSemana(
+            @PageableDefault(sort = {"data"}, direction = Sort.Direction.DESC) Pageable paginacao,
+            @PathVariable String cidade) {
+        return ResponseEntity.ok(meteorologiaService.tempoSemana(paginacao, cidade));
+    }
+
     @PostMapping
     public ResponseEntity<MeteorologiaEntity> criarRegistro(@RequestBody @Valid MeteorologiaEntity meteorologia) {
         return new ResponseEntity<>(meteorologiaService.novoRegistro(meteorologia), HttpStatus.CREATED);
@@ -60,6 +67,7 @@ public class MeteorologiaController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<MeteorologiaEntity> excluirRegistro(@PathVariable long id) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        meteorologiaService.excluirRegistro(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

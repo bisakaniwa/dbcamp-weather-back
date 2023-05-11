@@ -6,6 +6,7 @@ import com.template.data.exception.CidadeNotFoundException;
 import com.template.data.exception.MeteorologiaNotFoundException;
 import com.template.data.repository.MeteorologiaRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,13 +79,17 @@ public class MeteorologiaService {
                 cidadeHoje.getVelocidadeVentos());
     }
 
-    public Page<MeteorologiaEntity> tempoSemana(String cidade) {
+    public Page<MeteorologiaEntity> tempoSemana(Pageable pageable, String cidade) {
         LocalDate amanha = LocalDate.now().plusDays(1);
         LocalDate ultimoDia = LocalDate.now().plusDays(6);
-        List<MeteorologiaEntity> registrosCidade = meteorologiaRepository.findByCidade(cidade);
-        List<MeteorologiaEntity> registrosSemana = registrosCidade.stream()
-                .filter(registros -> registros.getData().
-                        );
+
+        List<MeteorologiaEntity> registrosSemana = meteorologiaRepository.findByCidadeAndDataBetween(
+                cidade, amanha, ultimoDia);
+        if (registrosSemana.isEmpty()) {
+            throw new MeteorologiaNotFoundException("Não há registros para esta semana nessa cidade!");
+        } else {
+            return new PageImpl<>(registrosSemana, pageable, 6);
+        }
     }
 
     @Transactional
