@@ -55,7 +55,7 @@ public class MeteorologiaService {
         if (listarPorCidade.isEmpty()) {
             throw new CidadeNotFoundException("Cidade não encontrada.");
         } else {
-            return new PageImpl<>(convertido, paginacao, 10);
+            return new PageImpl<>(convertido, paginacao, convertido.size());
         }
     }
 
