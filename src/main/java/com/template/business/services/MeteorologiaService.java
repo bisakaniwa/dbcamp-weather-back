@@ -88,6 +88,19 @@ public class MeteorologiaService {
                 cidadeHoje.getVelocidadeVentos());
     }
 
+    public Page<MeteorologiaEntity> tempoSemana(Pageable pageable, String cidade) {
+        LocalDate amanha = LocalDate.now().plusDays(1);
+        LocalDate ultimoDia = LocalDate.now().plusDays(6);
+
+        List<MeteorologiaEntity> registrosSemana = meteorologiaRepository.findByCidadeAndDataBetween(
+                cidade, amanha, ultimoDia);
+        if (registrosSemana.isEmpty()) {
+            throw new MeteorologiaNotFoundException("Não há registros para esta semana nessa cidade!");
+        } else {
+            return new PageImpl<>(registrosSemana, pageable, 6);
+        }
+    }
+
     @Transactional
     public MeteorologiaEntity novoRegistro(MeteorologiaEntity meteorologia) {
         return meteorologiaRepository.save(meteorologia);

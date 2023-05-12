@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -17,5 +18,7 @@ public interface MeteorologiaRepository extends JpaRepository<MeteorologiaEntity
     List<MeteorologiaEntity> findByCidade(String cidade);
 
     Page<MeteorologiaEntity> findByCidade(Pageable pageable, String cidade);
+
+    List<MeteorologiaEntity> findByCidadeAndDataBetween(String cidade, LocalDate amanha, LocalDate ultimoDia);
 
 }
