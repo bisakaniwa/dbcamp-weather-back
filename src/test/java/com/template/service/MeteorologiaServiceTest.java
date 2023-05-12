@@ -117,6 +117,29 @@ public class MeteorologiaServiceTest {
     }
 
     @Test
+    void buscarRegistroPorIdComSucesso() {
+        MeteorologiaEntity registro1 = novaMeteorologia();
+
+        when(meteorologiaRepositoryMock.findById(registro1.getId())).thenReturn(Optional.of(registro1));
+
+        Optional<MeteorologiaEntity> respostaDoMetodo = meteorologiaService.buscarPorId(registro1.getId());
+
+        Assertions.assertNotNull(respostaDoMetodo);
+        Assertions.assertEquals(registro1, respostaDoMetodo.get());
+
+        verify(meteorologiaRepositoryMock).findById(registro1.getId());
+    }
+
+    @Test
+    void buscarRegistroInexistentePorIdEFalhar() {
+        when(meteorologiaRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(MeteorologiaNotFoundException.class,
+                () -> meteorologiaService.buscarPorId(anyLong()));
+        verify(meteorologiaRepositoryMock).findById(anyLong());
+    }
+
+    @Test
     void buscarPorCidadeComSucesso() {
         MeteorologiaEntity cidade1 = novaMeteorologia();
         MeteorologiaEntity maisUmRegistroCidade1 = new MeteorologiaEntity(1234L, "Cidade1",

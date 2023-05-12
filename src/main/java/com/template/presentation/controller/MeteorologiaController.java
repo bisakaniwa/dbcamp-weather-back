@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:4767")
 @RestController
@@ -34,6 +35,11 @@ public class MeteorologiaController {
     @GetMapping("/all")
     public ResponseEntity<List<MeteorologiaEntity>> buscarTudo() {
         return ResponseEntity.ok(meteorologiaService.listarTudo());
+    }
+
+    @GetMapping("/recuperar/{id}")
+    public ResponseEntity<Optional<MeteorologiaEntity>> buscarPorId(@PathVariable long id) {
+        return ResponseEntity.ok(meteorologiaService.buscarPorId(id));
     }
 
     @GetMapping("/{cidade}")
