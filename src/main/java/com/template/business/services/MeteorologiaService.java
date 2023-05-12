@@ -9,7 +9,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +39,7 @@ public class MeteorologiaService {
         if (listarTodos.isEmpty()) {
             throw new MeteorologiaNotFoundException("Não há registros cadastrados.");
         } else {
-            return new PageImpl<>(convertido, pagina, 10);
+            return new PageImpl<>(convertido, pagina, convertido.size());
         }
     }
 
@@ -50,9 +49,8 @@ public class MeteorologiaService {
 
     public Page<MeteorologiaDTODadosLista> listarPorCidade(Pageable paginacao, String cidade) {
         List<MeteorologiaEntity> listarPorCidade = meteorologiaRepository.findByCidade(cidade);
-        List<MeteorologiaDTODadosLista> convertido = listarPorCidade.stream()
-                .map()// conversão de entidade para DTO
-                .toList();
+        List<MeteorologiaDTODadosLista> convertido = listarPorCidade.stream().map(listarRegistros -> mapper
+                .map(listarRegistros, MeteorologiaDTODadosLista.class)).toList();
 
         if (listarPorCidade.isEmpty()) {
             throw new CidadeNotFoundException("Cidade não encontrada.");

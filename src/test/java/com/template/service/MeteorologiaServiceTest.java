@@ -1,6 +1,7 @@
 package com.template.service;
 
 import com.template.business.services.MeteorologiaService;
+import com.template.config.mapper.MapperConfig;
 import com.template.data.DTOs.MeteorologiaDTODadosLista;
 import com.template.data.entity.MeteorologiaEntity;
 import com.template.data.enumKind.TempoDia;
@@ -16,6 +17,7 @@ import org.mockito.InjectMocks;
 
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +37,9 @@ public class MeteorologiaServiceTest {
     @Mock
     MeteorologiaRepository meteorologiaRepositoryMock;
 
+    @Mock
+    ModelMapper mapperMock;
+
     @InjectMocks
     MeteorologiaService meteorologiaService;
 
@@ -52,36 +57,38 @@ public class MeteorologiaServiceTest {
         );
     }
 
-//    @Test
-//    void buscarPaginaDeRegistrosComSucesso() {
-//        MeteorologiaEntity meteorologia1 = novaMeteorologia();
-//        MeteorologiaEntity meteorologia2 = outraMeteorologia();
-//        MeteorologiaEntity meteorologia3 = new MeteorologiaEntity();
-//
-//        Pageable paginacao = PageRequest.of(0, 10);
-//        List<MeteorologiaEntity> listaMeteorologias = List.of(meteorologia1, meteorologia2, meteorologia3);
-//        Page<MeteorologiaEntity> pagina = new PageImpl<>(listaMeteorologias, paginacao, 1);
-//
-//        when(meteorologiaRepositoryMock.findAll(paginacao)).thenReturn(pagina);
-//
-//        Page<MeteorologiaDTODadosLista> paginaMeteorologias = meteorologiaService.listarRegistros(paginacao);
-//
-//        Assertions.assertNotNull(listaMeteorologias);
-//        Assertions.assertNotNull(paginaMeteorologias);
-//        Assertions.assertEquals(3, paginaMeteorologias.getTotalElements());
-//    }
+    @Test
+    void buscarPaginaDeRegistrosComSucesso() {
+        MeteorologiaEntity meteorologia1 = novaMeteorologia();
+        MeteorologiaEntity meteorologia2 = outraMeteorologia();
+        MeteorologiaEntity meteorologia3 = new MeteorologiaEntity();
 
-//    @Test
-//    void bucarPaginaDeRegistrosVaziaELancarExcecao() {
-//        Pageable paginacao = PageRequest.of(0, 10);
-//        List<MeteorologiaEntity> listaMeteorologias = List.of();
+        Pageable paginacao = PageRequest.of(0, 5);
+        List<MeteorologiaEntity> listaMeteorologias = List.of(meteorologia1, meteorologia2, meteorologia3);
 //        Page<MeteorologiaEntity> pagina = new PageImpl<>(listaMeteorologias, paginacao, 1);
-//
-//        when(meteorologiaRepositoryMock.findAll(paginacao)).thenReturn(pagina);
-//
-//        Assertions.assertThrows(MeteorologiaNotFoundException.class,
-//                () -> meteorologiaService.listarRegistros(paginacao));
-//    }
+
+        when(meteorologiaRepositoryMock.findAll()).thenReturn(listaMeteorologias);
+//        when().thenReturn();
+
+        Page<MeteorologiaDTODadosLista> paginaMeteorologias = meteorologiaService.listarRegistros(paginacao);
+
+        Assertions.assertNotNull(paginaMeteorologias);
+        Assertions.assertEquals(3, paginaMeteorologias.getTotalElements());
+
+        verify(meteorologiaRepositoryMock, times(1)).findAll();
+    }
+
+    @Test
+    void bucarPaginaDeRegistrosVaziaELancarExcecao() {
+        Pageable paginacao = PageRequest.of(0, 10);
+        List<MeteorologiaEntity> listaMeteorologias = List.of();
+        Page<MeteorologiaEntity> pagina = new PageImpl<>(listaMeteorologias, paginacao, 1);
+
+        when(meteorologiaRepositoryMock.findAll(paginacao)).thenReturn(pagina);
+
+        Assertions.assertThrows(MeteorologiaNotFoundException.class,
+                () -> meteorologiaService.listarRegistros(paginacao));
+    }
 
     @Test
     void buscarTodosOsRegistrosComSucesso() {

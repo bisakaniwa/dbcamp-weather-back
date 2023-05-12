@@ -4,7 +4,6 @@ import com.template.business.services.MeteorologiaService;
 import com.template.data.DTOs.MeteorologiaDTODadosLista;
 import com.template.data.entity.MeteorologiaEntity;
 import jakarta.validation.Valid;
-import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Description;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
