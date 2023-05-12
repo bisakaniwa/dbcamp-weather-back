@@ -41,14 +41,14 @@ public class MeteorologiaServiceTest {
     @InjectMocks
     MeteorologiaService meteorologiaService;
 
-    public MeteorologiaEntity novaMeteorologia() {
+    public MeteorologiaEntity mockRegistro() {
         return new MeteorologiaEntity(
                 1230L, "Cidade1", LocalDate.of(2023, 4, 12), TempoDia.SOL, TempoNoite.NUBLADO,
                 23f, 12f, 2f, 3f, 1f
         );
     }
 
-    public MeteorologiaEntity outraMeteorologia() {
+    public MeteorologiaEntity outroRegistro() {
         return new MeteorologiaEntity(
                 1231L, "Cidade2", LocalDate.of(2023, 4, 13), TempoDia.CHUVA, TempoNoite.LIMPO,
                 24f, 15f, 0f, 1f, 4f
@@ -73,8 +73,8 @@ public class MeteorologiaServiceTest {
 
     @Test
     void buscarPaginaDeRegistrosComSucesso() {
-        MeteorologiaEntity meteorologia1 = novaMeteorologia();
-        MeteorologiaEntity meteorologia2 = outraMeteorologia();
+        MeteorologiaEntity meteorologia1 = mockRegistro();
+        MeteorologiaEntity meteorologia2 = outroRegistro();
         MeteorologiaEntity meteorologia3 = new MeteorologiaEntity();
 
         Pageable paginacao = PageRequest.of(0, 10);
@@ -99,12 +99,13 @@ public class MeteorologiaServiceTest {
 
         Assertions.assertThrows(MeteorologiaNotFoundException.class,
                 () -> meteorologiaService.listarRegistros(paginacao));
+        verify(meteorologiaRepositoryMock).findAll();
     }
 
     @Test
     void buscarTodosOsRegistrosComSucesso() {
-        MeteorologiaEntity meteorologia1 = novaMeteorologia();
-        MeteorologiaEntity meteorologia2 = outraMeteorologia();
+        MeteorologiaEntity meteorologia1 = mockRegistro();
+        MeteorologiaEntity meteorologia2 = outroRegistro();
 
         when(meteorologiaRepositoryMock.findAll()).thenReturn(List.of(meteorologia1, meteorologia2));
 
@@ -119,8 +120,8 @@ public class MeteorologiaServiceTest {
     }
 
     @Test
-    void buscarPorCidadeComSucesso() {
-        MeteorologiaEntity cidade1 = novaMeteorologia();
+    void buscarPaginaDeRegistrosPorCidadeComSucesso() {
+        MeteorologiaEntity cidade1 = mockRegistro();
         MeteorologiaEntity maisUmRegistroCidade1 = novoRegistro("Cidade1", LocalDate.now());
 
         Pageable paginacao = PageRequest.of(0, 10);
@@ -136,7 +137,7 @@ public class MeteorologiaServiceTest {
     }
 
     @Test
-    void buscarUmaCidadeNaoRegistradaPaginado() {
+    void buscarPaginaDeRegistrosDeCidadeNaoRegistradaELancarExcecao() {
         Pageable paginacao = PageRequest.of(0, 10);
         List<MeteorologiaEntity> listaMeteorologias = List.of();
 
@@ -144,6 +145,7 @@ public class MeteorologiaServiceTest {
 
         Assertions.assertThrows(CidadeNotFoundException.class,
                 () -> meteorologiaService.listarPorCidade(paginacao, "Cidade1"));
+        verify(meteorologiaRepositoryMock).findByCidade("Cidade1");
     }
 
     @Test
@@ -162,21 +164,23 @@ public class MeteorologiaServiceTest {
     }
 
     @Test
-    void buscarMeteorologiaDeHojeParaCidadeNaoCadastrada() {
+    void buscarMeteorologiaDeHojeParaCidadeNaoCadastradaEFalhar() {
         when(meteorologiaRepositoryMock.findByCidade("Cidade3")).thenReturn(List.of());
 
         Assertions.assertThrows(CidadeNotFoundException.class,
                 () -> meteorologiaService.tempoHoje("Cidade3"));
+        verify(meteorologiaRepositoryMock).findByCidade("Cidade3");
     }
 
     @Test
-    void buscarRegistroNaoCadastradoParaHojeNaCidade1() {
-        MeteorologiaEntity cidade1 = novaMeteorologia();
+    void buscarRegistroNaoCadastradoParaHojeNaCidade1EFalhar() {
+        MeteorologiaEntity cidade1 = mockRegistro();
 
         when(meteorologiaRepositoryMock.findByCidade("Cidade1")).thenReturn(List.of(cidade1));
 
         Assertions.assertThrows(MeteorologiaNotFoundException.class,
                 () -> meteorologiaService.tempoHoje("Cidade1"));
+        verify(meteorologiaRepositoryMock).findByCidade("Cidade1");
     }
 
     @Test
@@ -192,12 +196,12 @@ public class MeteorologiaServiceTest {
         Assertions.assertEquals(6, metodoChamado.getTotalElements());
         Assertions.assertEquals(6, metodoChamado.getSize());
 
-        verify(meteorologiaRepositoryMock, times(1)).findByCidadeAndDataBetween("Cidade1",
+        verify(meteorologiaRepositoryMock).findByCidadeAndDataBetween("Cidade1",
                 semana.get(0).getData(), semana.get(5).getData());
     }
 
     @Test
-    void buscarMeteorologiasDaSemanaDaCidade1ENaoEncontrarNada() {
+    void buscarMeteorologiaDaSemanaDaCidade1ENaoEncontrarRegistros() {
         Pageable paginacao = PageRequest.of(0, 6);
 
         when(meteorologiaRepositoryMock.findByCidadeAndDataBetween("Cidade1", LocalDate.now().plusDays(1),
@@ -205,21 +209,23 @@ public class MeteorologiaServiceTest {
 
         Assertions.assertThrows(MeteorologiaNotFoundException.class,
                 () -> meteorologiaService.tempoSemana(paginacao, "Cidade1"));
+        verify(meteorologiaRepositoryMock).findByCidadeAndDataBetween("Cidade1",
+                LocalDate.now().plusDays(1), LocalDate.now().plusDays(6));
     }
 
     @Test
     void registrarMeteorologiaComSucesso() {
-        MeteorologiaEntity meteorologia1 = novaMeteorologia();
+        MeteorologiaEntity meteorologia1 = mockRegistro();
         when(meteorologiaRepositoryMock.save(meteorologia1)).thenReturn(meteorologia1);
 
         Assertions.assertEquals(meteorologia1, meteorologiaService.novoRegistro(meteorologia1));
+        verify(meteorologiaRepositoryMock).save(meteorologia1);
     }
 
     @Test
     void registrarMeteorologiaSemDataEFalhar() {
-        MeteorologiaEntity meteorologiaSemData = new MeteorologiaEntity(
-                1231L, "Townsville", null, TempoDia.CHUVA, TempoNoite.CHUVA, 22f,
-                11f, 3f, 2f, 1f);
+        MeteorologiaEntity meteorologiaSemData = novoRegistro("Townsville", null);
+
         try {
             meteorologiaRepositoryMock.save(meteorologiaSemData);
         } catch (Exception e) {
@@ -228,8 +234,8 @@ public class MeteorologiaServiceTest {
     }
 
     @Test
-    void atualizarMeteorologiaCompletaComSucesso() {
-        MeteorologiaEntity meteorologia1 = novaMeteorologia();
+    void atualizarMeteorologiaComSucesso() {
+        MeteorologiaEntity meteorologia1 = mockRegistro();
         meteorologia1.setData(LocalDate.of(2022, 7, 23));
 
         when(meteorologiaRepositoryMock.findById(meteorologia1.getId())).thenReturn(Optional.of(meteorologia1));
@@ -241,8 +247,8 @@ public class MeteorologiaServiceTest {
 
     @Test
     void atualizarMeteorologiaComUmCampoVazioComSucesso() {
-        MeteorologiaEntity meteorologia1 = novaMeteorologia();
-        MeteorologiaEntity meteorologia2 = novaMeteorologia();
+        MeteorologiaEntity meteorologia1 = mockRegistro();
+        MeteorologiaEntity meteorologia2 = mockRegistro();
         meteorologia1.setTempoDia(null);
 
         when(meteorologiaRepositoryMock.findById(meteorologia2.getId())).thenReturn(Optional.of(meteorologia2));
@@ -257,14 +263,14 @@ public class MeteorologiaServiceTest {
     void atualizarMeteorologiaInexistenteEFalhar() {
         when(meteorologiaRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
 
-        verify(meteorologiaRepositoryMock, times(0)).save(novaMeteorologia());
+        verify(meteorologiaRepositoryMock, times(0)).save(mockRegistro());
         Assertions.assertThrows(MeteorologiaNotFoundException.class,
-                () -> meteorologiaService.atualizarRegistro(novaMeteorologia()));
+                () -> meteorologiaService.atualizarRegistro(mockRegistro()));
     }
 
     @Test
     void removerRegistroComSucesso() {
-        MeteorologiaEntity meteorologia1 = novaMeteorologia();
+        MeteorologiaEntity meteorologia1 = mockRegistro();
 
         when(meteorologiaRepositoryMock.findById(1230L)).thenReturn(Optional.of(meteorologia1));
 
