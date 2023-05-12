@@ -1,8 +1,7 @@
 package com.template.presentation.controller;
 
 import com.template.business.services.MeteorologiaService;
-import com.template.data.DTOs.MeteorologiaDTOReadOnly;
-import com.template.data.DTOs.MeteorologiaHojeDTOReadOnly;
+import com.template.data.DTOs.MeteorologiaDTODadosLista;
 import com.template.data.entity.MeteorologiaEntity;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +26,7 @@ public class MeteorologiaController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<MeteorologiaDTOReadOnly>> buscarRegistros(
+    public ResponseEntity<Page<MeteorologiaDTODadosLista>> buscarRegistros(
             @PageableDefault(sort = {"data"}, direction = Sort.Direction.DESC) Pageable paginacao) {
         return ResponseEntity.ok(meteorologiaService.listarRegistros(paginacao));
     }
@@ -39,38 +37,37 @@ public class MeteorologiaController {
     }
 
     @GetMapping("/{cidade}")
-    public ResponseEntity<Page<MeteorologiaDTOReadOnly>> buscarPorCidade(
+    public ResponseEntity<Page<MeteorologiaDTODadosLista>> buscarPorCidade(
             @PageableDefault(sort = {"data"}, direction = Sort.Direction.DESC) Pageable paginacao,
             @PathVariable String cidade) {
         return ResponseEntity.ok(meteorologiaService.listarPorCidade(paginacao, cidade));
     }
 
     @GetMapping("/{cidade}/hoje")
-    public ResponseEntity<MeteorologiaHojeDTOReadOnly> buscarTempoHoje(@PathVariable String cidade) {
+    public ResponseEntity<MeteorologiaEntity> buscarTempoHoje(@PathVariable String cidade) {
         return ResponseEntity.ok(meteorologiaService.tempoHoje(cidade));
     }
 
+    @GetMapping("/{cidade}/semana")
+    public ResponseEntity<Page<MeteorologiaEntity>> buscarTempoSemana(
+            @PageableDefault(sort = {"data"}, direction = Sort.Direction.ASC) Pageable paginacao,
+            @PathVariable String cidade) {
+        return ResponseEntity.ok(meteorologiaService.tempoSemana(paginacao, cidade));
+    }
+
     @PostMapping
-    @Transactional
     public ResponseEntity<MeteorologiaEntity> criarRegistro(@RequestBody @Valid MeteorologiaEntity meteorologia) {
         return new ResponseEntity<>(meteorologiaService.novoRegistro(meteorologia), HttpStatus.CREATED);
     }
 
     @PutMapping
-    @Transactional
     public ResponseEntity<MeteorologiaEntity> atualizarRegistro(@RequestBody @Valid MeteorologiaEntity meteorologia) {
         return ResponseEntity.ok(meteorologiaService.atualizarRegistro(meteorologia));
     }
 
     @DeleteMapping("/{id}")
-    @Transactional
     public ResponseEntity<MeteorologiaEntity> excluirRegistro(@PathVariable long id) {
-        try {
-            meteorologiaService.excluirRegistro(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        meteorologiaService.excluirRegistro(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

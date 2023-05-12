@@ -1,12 +1,12 @@
 package com.template.business.services;
 
-import com.template.data.DTOs.MeteorologiaDTOReadOnly;
-import com.template.data.DTOs.MeteorologiaHojeDTOReadOnly;
+import com.template.data.DTOs.MeteorologiaDTODadosLista;
 import com.template.data.entity.MeteorologiaEntity;
 import com.template.data.exception.CidadeNotFoundException;
 import com.template.data.exception.MeteorologiaNotFoundException;
 import com.template.data.repository.MeteorologiaRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,17 +26,23 @@ public class MeteorologiaService {
         this.meteorologiaRepository = meteorologiaRepository;
     }
 
-    public Page<MeteorologiaDTOReadOnly> listarRegistros(Pageable paginacao) {
-        return meteorologiaRepository.findAll(paginacao).map(MeteorologiaDTOReadOnly::new);
+    public Page<MeteorologiaDTODadosLista> listarRegistros(Pageable paginacao) {
+        Page<MeteorologiaDTODadosLista> buscar = meteorologiaRepository.findAll(paginacao)
+                .map(MeteorologiaDTODadosLista::new);
+        if (buscar.isEmpty()) {
+            throw new MeteorologiaNotFoundException("Não há registros cadastrados.");
+        } else {
+            return buscar;
+        }
     }
 
     public List<MeteorologiaEntity> listarTudo() {
         return meteorologiaRepository.findAll();
     }
 
-    public Page<MeteorologiaDTOReadOnly> listarPorCidade(Pageable paginacao, String cidade) {
-        Page<MeteorologiaDTOReadOnly> buscar = meteorologiaRepository.findByCidade(paginacao, cidade)
-                .map(MeteorologiaDTOReadOnly::new);
+    public Page<MeteorologiaDTODadosLista> listarPorCidade(Pageable paginacao, String cidade) {
+        Page<MeteorologiaDTODadosLista> buscar = meteorologiaRepository.findByCidade(paginacao, cidade)
+                .map(MeteorologiaDTODadosLista::new);
         if (buscar.isEmpty()) {
             throw new CidadeNotFoundException("Cidade não encontrada.");
         } else {
@@ -44,7 +50,7 @@ public class MeteorologiaService {
         }
     }
 
-    public MeteorologiaHojeDTOReadOnly tempoHoje(String cidade) {
+    public MeteorologiaEntity tempoHoje(String cidade) {
         LocalDate hoje = LocalDate.now();
         List<MeteorologiaEntity> cidadeBuscada = meteorologiaRepository.findByCidade(cidade);
 
@@ -59,8 +65,8 @@ public class MeteorologiaService {
         }
     }
 
-    private static MeteorologiaHojeDTOReadOnly criarMeteorologiaHoje(MeteorologiaEntity cidadeHoje) {
-        return new MeteorologiaHojeDTOReadOnly(
+    private static MeteorologiaEntity criarMeteorologiaHoje(MeteorologiaEntity cidadeHoje) {
+        return new MeteorologiaEntity(
                 cidadeHoje.getId(),
                 cidadeHoje.getCidade(),
                 cidadeHoje.getData(),
@@ -73,6 +79,20 @@ public class MeteorologiaService {
                 cidadeHoje.getVelocidadeVentos());
     }
 
+    public Page<MeteorologiaEntity> tempoSemana(Pageable pageable, String cidade) {
+        LocalDate amanha = LocalDate.now().plusDays(1);
+        LocalDate ultimoDia = LocalDate.now().plusDays(6);
+
+        List<MeteorologiaEntity> registrosSemana = meteorologiaRepository.findByCidadeAndDataBetween(
+                cidade, amanha, ultimoDia);
+        if (registrosSemana.isEmpty()) {
+            throw new MeteorologiaNotFoundException("Não há registros para esta semana nessa cidade!");
+        } else {
+            return new PageImpl<>(registrosSemana, pageable, 6);
+        }
+    }
+
+    @Transactional
     public MeteorologiaEntity novoRegistro(MeteorologiaEntity meteorologia) {
         return meteorologiaRepository.save(meteorologia);
     }
@@ -101,8 +121,13 @@ public class MeteorologiaService {
         }
     }
 
+    @Transactional
     public void excluirRegistro(long id) {
-        Optional<MeteorologiaEntity> meteorologia = meteorologiaRepository.findById(id);
-        meteorologiaRepository.deleteById(id);
+        Optional<MeteorologiaEntity> registro = meteorologiaRepository.findById(id);
+        if (registro.isEmpty()) {
+            throw new MeteorologiaNotFoundException("Registro não encontrado.");
+        } else {
+            meteorologiaRepository.deleteById(id);
+        }
     }
 }

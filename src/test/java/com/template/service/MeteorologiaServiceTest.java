@@ -1,8 +1,7 @@
 package com.template.service;
 
 import com.template.business.services.MeteorologiaService;
-import com.template.data.DTOs.MeteorologiaDTOReadOnly;
-import com.template.data.DTOs.MeteorologiaHojeDTOReadOnly;
+import com.template.data.DTOs.MeteorologiaDTODadosLista;
 import com.template.data.entity.MeteorologiaEntity;
 import com.template.data.enumKind.TempoDia;
 import com.template.data.enumKind.TempoNoite;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 
-import static org.assertj.core.api.Assertions.*;
 
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -54,19 +52,35 @@ public class MeteorologiaServiceTest {
         );
     }
 
+    public MeteorologiaEntity novoRegistro(String cidade, LocalDate data) {
+        return new MeteorologiaEntity(1L, cidade, data, TempoDia.SOL, TempoNoite.LIMPO,
+                2f, 2f, 2f, 2f, 2f);
+    }
+
+    public List<MeteorologiaEntity> previsaoSemanaCidade1() {
+        MeteorologiaEntity dia1 = novoRegistro("Cidade1", LocalDate.now().plusDays(1));
+        MeteorologiaEntity dia2 = novoRegistro("Cidade1", LocalDate.now().plusDays(2));
+        MeteorologiaEntity dia3 = novoRegistro("Cidade1", LocalDate.now().plusDays(3));
+        MeteorologiaEntity dia4 = novoRegistro("Cidade1", LocalDate.now().plusDays(4));
+        MeteorologiaEntity dia5 = novoRegistro("Cidade1", LocalDate.now().plusDays(5));
+        MeteorologiaEntity dia6 = novoRegistro("Cidade1", LocalDate.now().plusDays(6));
+
+        return List.of(dia1, dia2, dia3, dia4, dia5, dia6);
+    }
+
     @Test
     void buscarPaginaDeRegistrosComSucesso() {
-        MeteorologiaEntity item01 = novaMeteorologia();
-        MeteorologiaEntity item02 = outraMeteorologia();
-        MeteorologiaEntity item03 = new MeteorologiaEntity();
+        MeteorologiaEntity meteorologia1 = novaMeteorologia();
+        MeteorologiaEntity meteorologia2 = outraMeteorologia();
+        MeteorologiaEntity meteorologia3 = new MeteorologiaEntity();
 
         Pageable paginacao = PageRequest.of(0, 10);
-        List<MeteorologiaEntity> listaMeteorologias = List.of(item01, item02, item03);
+        List<MeteorologiaEntity> listaMeteorologias = List.of(meteorologia1, meteorologia2, meteorologia3);
         Page<MeteorologiaEntity> pagina = new PageImpl<>(listaMeteorologias, paginacao, 1);
 
         when(meteorologiaRepositoryMock.findAll(paginacao)).thenReturn(pagina);
 
-        Page<MeteorologiaDTOReadOnly> paginaMeteorologias = meteorologiaService.listarRegistros(paginacao);
+        Page<MeteorologiaDTODadosLista> paginaMeteorologias = meteorologiaService.listarRegistros(paginacao);
 
         Assertions.assertNotNull(listaMeteorologias);
         Assertions.assertNotNull(paginaMeteorologias);
@@ -74,11 +88,23 @@ public class MeteorologiaServiceTest {
     }
 
     @Test
-    void buscarTodosOsRegistrosComSucesso() {
-        MeteorologiaEntity dummyMeteorologia = novaMeteorologia();
-        MeteorologiaEntity dummyMeteorologia1 = outraMeteorologia();
+    void bucarPaginaDeRegistrosVaziaELancarExcecao() {
+        Pageable paginacao = PageRequest.of(0, 10);
+        List<MeteorologiaEntity> listaMeteorologias = List.of();
+        Page<MeteorologiaEntity> pagina = new PageImpl<>(listaMeteorologias, paginacao, 1);
 
-        when(meteorologiaRepositoryMock.findAll()).thenReturn(List.of(dummyMeteorologia, dummyMeteorologia1));
+        when(meteorologiaRepositoryMock.findAll(paginacao)).thenReturn(pagina);
+
+        Assertions.assertThrows(MeteorologiaNotFoundException.class,
+                () -> meteorologiaService.listarRegistros(paginacao));
+    }
+
+    @Test
+    void buscarTodosOsRegistrosComSucesso() {
+        MeteorologiaEntity meteorologia1 = novaMeteorologia();
+        MeteorologiaEntity meteorologia2 = outraMeteorologia();
+
+        when(meteorologiaRepositoryMock.findAll()).thenReturn(List.of(meteorologia1, meteorologia2));
 
         List<MeteorologiaEntity> lista = meteorologiaService.listarTudo();
 
@@ -86,8 +112,8 @@ public class MeteorologiaServiceTest {
         Assertions.assertEquals(2, lista.size());
         Assertions.assertEquals(MeteorologiaEntity.class, lista.get(0).getClass());
 
-        Assertions.assertEquals(dummyMeteorologia, lista.get(0));
-        Assertions.assertEquals(dummyMeteorologia1, lista.get(1));
+        Assertions.assertEquals(meteorologia1, lista.get(0));
+        Assertions.assertEquals(meteorologia2, lista.get(1));
     }
 
     @Test
@@ -103,7 +129,7 @@ public class MeteorologiaServiceTest {
 
         when(meteorologiaRepositoryMock.findByCidade(paginacao, "Cidade1")).thenReturn(pagina);
 
-        Page<MeteorologiaDTOReadOnly> paginaMeteorologias = meteorologiaService.listarPorCidade(paginacao, "Cidade1");
+        Page<MeteorologiaDTODadosLista> paginaMeteorologias = meteorologiaService.listarPorCidade(paginacao, "Cidade1");
 
         Assertions.assertNotNull(paginaMeteorologias);
         Assertions.assertEquals(2, paginaMeteorologias.getTotalElements());
@@ -130,19 +156,11 @@ public class MeteorologiaServiceTest {
 
         when(meteorologiaRepositoryMock.findByCidade("Cidade1")).thenReturn(List.of(cidade1));
 
-        MeteorologiaHojeDTOReadOnly tempoNaCidade1 = meteorologiaService.tempoHoje("Cidade1");
+        MeteorologiaEntity tempoNaCidade1 = meteorologiaService.tempoHoje("Cidade1");
 
         Assertions.assertNotNull(tempoNaCidade1);
-        Assertions.assertEquals(cidade1.getId(), tempoNaCidade1.id());
-        Assertions.assertEquals(cidade1.getCidade(), tempoNaCidade1.cidade());
-        Assertions.assertEquals(cidade1.getData(), tempoNaCidade1.data());
-        Assertions.assertEquals(cidade1.getTempoDia(), tempoNaCidade1.tempoDia());
-        Assertions.assertEquals(cidade1.getTempoNoite(), tempoNaCidade1.tempoNoite());
-        Assertions.assertEquals(cidade1.getTemperaturaMaxima(), tempoNaCidade1.temperaturaMaxima());
-        Assertions.assertEquals(cidade1.getTemperaturaMinima(), tempoNaCidade1.temperaturaMinima());
-        Assertions.assertEquals(cidade1.getPrecipitacao(), tempoNaCidade1.precipitacao());
-        Assertions.assertEquals(cidade1.getUmidade(), tempoNaCidade1.umidade());
-        Assertions.assertEquals(cidade1.getVelocidadeVentos(), tempoNaCidade1.velocidadeVentos());
+        Assertions.assertEquals(cidade1.getId(), tempoNaCidade1.getId());
+        Assertions.assertEquals(cidade1.getData(), tempoNaCidade1.getData());
     }
 
     @Test
@@ -164,11 +182,39 @@ public class MeteorologiaServiceTest {
     }
 
     @Test
-    void registrarMeteorologiaComSucesso() {
-        MeteorologiaEntity dummyMeteorologia = novaMeteorologia();
-        when(meteorologiaRepositoryMock.save(dummyMeteorologia)).thenReturn(dummyMeteorologia);
+    void buscarMeteorologiaDaSemanaDaCidade1ComSucesso() {
+        List<MeteorologiaEntity> semana = previsaoSemanaCidade1();
+        Pageable paginacao = PageRequest.of(0, 6);
 
-        assertThat(dummyMeteorologia).isEqualTo(meteorologiaService.novoRegistro(dummyMeteorologia));
+        when(meteorologiaRepositoryMock.findByCidadeAndDataBetween("Cidade1", semana.get(0).getData(),
+                semana.get(5).getData())).thenReturn(semana);
+
+        Page<MeteorologiaEntity> metodoChamado = meteorologiaService.tempoSemana(paginacao, "Cidade1");
+
+        Assertions.assertEquals(6, metodoChamado.getTotalElements());
+        Assertions.assertEquals(6, metodoChamado.getSize());
+
+        verify(meteorologiaRepositoryMock, times(1)).findByCidadeAndDataBetween("Cidade1",
+                semana.get(0).getData(), semana.get(5).getData());
+    }
+
+    @Test
+    void buscarMeteorologiasDaSemanaDaCidade1ENaoEncontrarNada() {
+        Pageable paginacao = PageRequest.of(0, 6);
+
+        when(meteorologiaRepositoryMock.findByCidadeAndDataBetween("Cidade1", LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(6))).thenReturn(List.of());
+
+        Assertions.assertThrows(MeteorologiaNotFoundException.class,
+                () -> meteorologiaService.tempoSemana(paginacao, "Cidade1"));
+    }
+
+    @Test
+    void registrarMeteorologiaComSucesso() {
+        MeteorologiaEntity meteorologia1 = novaMeteorologia();
+        when(meteorologiaRepositoryMock.save(meteorologia1)).thenReturn(meteorologia1);
+
+        Assertions.assertEquals(meteorologia1, meteorologiaService.novoRegistro(meteorologia1));
     }
 
     @Test
@@ -220,21 +266,19 @@ public class MeteorologiaServiceTest {
 
     @Test
     void removerRegistroComSucesso() {
-        MeteorologiaEntity dummyMeteorologia = novaMeteorologia();
+        MeteorologiaEntity meteorologia1 = novaMeteorologia();
+
+        when(meteorologiaRepositoryMock.findById(1230L)).thenReturn(Optional.of(meteorologia1));
 
         meteorologiaService.excluirRegistro(1230);
-        verify(meteorologiaRepositoryMock, times(1)).deleteById(1230L);
+        verify(meteorologiaRepositoryMock, times(1)).deleteById(meteorologia1.getId());
     }
 
     @Test
     void removerRegistroInexistente() {
-        when(meteorologiaRepositoryMock.findById(anyLong()))
-                .thenThrow(new MeteorologiaNotFoundException("Registro não encontrado."));
+        when(meteorologiaRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
 
-        try {
-            meteorologiaService.excluirRegistro(1230L);
-        } catch (Exception e) {
-            Assertions.assertEquals(MeteorologiaNotFoundException.class, e.getClass());
-        }
+        Assertions.assertThrows(MeteorologiaNotFoundException.class,
+                () -> meteorologiaService.excluirRegistro(anyLong()));
     }
 }
