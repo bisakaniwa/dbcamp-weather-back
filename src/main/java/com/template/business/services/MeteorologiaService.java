@@ -40,6 +40,16 @@ public class MeteorologiaService {
         return meteorologiaRepository.findAll();
     }
 
+    public Optional<MeteorologiaEntity> buscarPorId(long id) {
+        Optional<MeteorologiaEntity> busca = meteorologiaRepository.findById(id);
+
+        if (busca.isEmpty()) {
+            throw new MeteorologiaNotFoundException("Registro não encontrado.");
+        } else {
+            return busca;
+        }
+    }
+
     public Page<MeteorologiaDTODadosLista> listarPorCidade(Pageable paginacao, String cidade) {
         Page<MeteorologiaDTODadosLista> buscar = meteorologiaRepository.findByCidade(paginacao, cidade)
                 .map(MeteorologiaDTODadosLista::new);
